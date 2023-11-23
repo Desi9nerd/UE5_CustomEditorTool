@@ -75,6 +75,7 @@ DerivedDataCache/*
 
 
 # Assets
+Content/StarterContent/*
 Content/Assets/*
 Content/TrainStation/*
 Content/LevelPrototyping/*
