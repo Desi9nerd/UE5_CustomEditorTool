@@ -17,8 +17,8 @@
 	"Modules": [
 		{
 			"Name": "SWManager",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"Type": "Editor",
+			"LoadingPhase": "PreDefault"
 		}
 	]
 }
