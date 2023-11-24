@@ -14,5 +14,5 @@ class SWMANAGER_API UQuickAssetAction : public UAssetActionUtility
 
 public:
 	UFUNCTION(CallInEditor)
-	void TestFunc();
+	void DuplicateAssets(int32 NumOfDuplicates); // Asset º¹Á¦
 };
