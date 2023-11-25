@@ -66,6 +66,13 @@ void UQuickAssetAction::AddPrefixes() // 접두어 달기
 			continue;
 		}
 
+		//** Material에서 Material Instance를 생성하는 경우 언리얼에서 파일명 끝에 _Inst을 자동으로 붙인다. 따라서 앞에 M_과 끝에 _Inst를 제거해준다. 그러면 추후에 접두어 MI_가 정상적을 붙는다.
+		if (SelectedObject->IsA<UMaterialInstanceConstant>()) // 선택한 Asset이 Material Instance라면
+		{
+			OldName.RemoveFromStart(TEXT("M_"));
+			OldName.RemoveFromEnd(TEXT("_Inst"));
+		}
+
 		const FString NewNameWithPrefix = *PrefixFound + OldName; // '접두어+기존이름' 변수에 담음
 
 		UEditorUtilityLibrary::RenameAsset(SelectedObject, NewNameWithPrefix); // 선택된 Asset을 새로운 이름으로 이름 변경
