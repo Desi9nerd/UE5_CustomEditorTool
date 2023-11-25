@@ -39,3 +39,41 @@ void UQuickAssetAction::DuplicateAssets(int32 NumOfDuplicates) // Asset 복제하기
 		ShowNotifyInfo(TEXT("Successfully duplicated " + FString::FromInt(Counter) + " files"));
 	}
 }
+
+void UQuickAssetAction::AddPrefixes() // 접두어 달기
+{
+	TArray<UObject*>SelectedObjects = UEditorUtilityLibrary::GetSelectedAssets(); // 선택된 Asset들을 TArray변수에 다 담는다
+	uint32 Counter = 0;
+
+	for (UObject* SelectedObject : SelectedObjects)
+	{
+		if (false == IsValid(SelectedObject)) continue; // 선택된 Asset이 없으면 리턴
+
+		FString* PrefixFound = PrefixMap.Find(SelectedObject->GetClass()); // PrefixMap에서 알맞는 접두어를 찾아 변수에 담는다
+
+		if (nullptr == PrefixFound || PrefixFound->IsEmpty()) // PrefixFound가 없다면
+		{
+			Print(TEXT("Failed to find prefix for class ") + SelectedObject->GetClass()->GetName(), FColor::Red); 
+			continue;
+		}
+
+		FString OldName = SelectedObject->GetName();
+
+		if (OldName.StartsWith(*PrefixFound))
+		{
+			Print(OldName + TEXT(" already has prefix added"), FColor::Red);
+			continue;
+		}
+
+		const FString NewNameWithPrefix = *PrefixFound + OldName; // '접두어+기존이름' 변수에 담음
+
+		UEditorUtilityLibrary::RenameAsset(SelectedObject, NewNameWithPrefix); // 선택된 Asset을 새로운 이름으로 이름 변경
+
+		++Counter; // 추후에 문구를 띄울때 몇개의 Asset들이 이름변경 됬는지 알아야하므로 기록
+	}
+
+	if (Counter > 0)
+	{
+		ShowNotifyInfo(TEXT("Successfully renamed " + FString::FromInt(Counter) + " assets"));
+	}
+}
