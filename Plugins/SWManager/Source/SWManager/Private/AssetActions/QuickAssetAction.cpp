@@ -59,8 +59,9 @@ void UQuickAssetAction::AddPrefixes() // 접두어 달기
 
 		FString OldName = SelectedObject->GetName();
 
-		if (OldName.StartsWith(*PrefixFound))
+		if (OldName.StartsWith(*PrefixFound)) // 기존이름에 이미 해당 접두어가 있는 경우
 		{
+			// 아래 문구를 띄우고 continue하여 지금 Asset은 작업하지 않고 넘어가고 다음 Asset에 접두어 적용
 			Print(OldName + TEXT(" already has prefix added"), FColor::Red);
 			continue;
 		}
