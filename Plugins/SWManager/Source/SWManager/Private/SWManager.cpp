@@ -1,5 +1,8 @@
 ﻿#include "SWManager.h"
 #include "ContentBrowserModule.h"
+#include "DebugHeader.h"
+#include "EditorAssetLibrary.h"
+#include "ObjectTools.h"
 
 #define LOCTEXT_NAMESPACE "FSWManagerModule"
 
@@ -27,7 +30,7 @@ void FSWManagerModule::InitCBMenuExtention()
 	ContentBrowserModuleMenuExtenders.Add(FContentBrowserMenuExtender_SelectedPaths::CreateRaw(this, &FSWManagerModule::CustomCBMenuExtender));
 }
 
-TSharedRef<FExtender> FSWManagerModule::CustomCBMenuExtender(const TArray<FString>& SelectedPaths)
+TSharedRef<FExtender> FSWManagerModule::CustomCBMenuExtender(const TArray<FString>& SelectedPaths) // 우클릭 시 ContentBrowserMenu에 노출시켜질 위치
 {
 	TSharedRef<FExtender> MenuExtender(new FExtender());
 
@@ -38,24 +41,76 @@ TSharedRef<FExtender> FSWManagerModule::CustomCBMenuExtender(const TArray<FStrin
 			EExtensionHook::After,
 			TSharedPtr<FUICommandList>(),
 			FMenuExtensionDelegate::CreateRaw(this, &FSWManagerModule::AddCBMenuEntry));
+
+		FolderPathsSelected = SelectedPaths; // 유저가 현재 선택한 폴더에 접근할 수 있도록 SelectedPaths를 FolderPathsSelected변수에 담는다
 	}
 
 	return MenuExtender;
 }
 
-void FSWManagerModule::AddCBMenuEntry(FMenuBuilder& MenuBuilder)
+void FSWManagerModule::AddCBMenuEntry(FMenuBuilder& MenuBuilder) // ContentBrowserMenu에 노출되는 버튼에 함수 바인딩
 {
 	MenuBuilder.AddMenuEntry
 	(
 		FText::FromString(TEXT("사용하지 않은 에셋 제거하기")),
-		FText::FromString(TEXT("Safely delete all unused assets under folder")),
+		FText::FromString(TEXT("폴더에서 사용하지 않는 에셋들을 안전하게 지우는 기능")),
 		FSlateIcon(),
 		FExecuteAction::CreateRaw(this, &FSWManagerModule::OnDeleteUnsuedAssetButtonClicked)
 	);
 }
 
-void FSWManagerModule::OnDeleteUnsuedAssetButtonClicked()
+void FSWManagerModule::OnDeleteUnsuedAssetButtonClicked()  // 에셋 삭제
 {
+	if (FolderPathsSelected.Num() > 1) // 2개 이상의 폴더가 선택된 경우
+	{
+		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("한 개의 폴더에서만 진행할 수 있습니다"));
+		return;
+	}
+
+	TArray<FString> AssetsPathNames = UEditorAssetLibrary::ListAssets(FolderPathsSelected[0]); // 선택된 폴더(FolderPathsSelected[0]) 내에 있는 모든 에셋들을 AssetsPathNames변수에 담는다
+
+	if (AssetsPathNames.Num() == 0) // 폴더를 선택하지 않은 경우
+	{
+		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("선택한 폴더에서 아무런 에셋을 찾을 수 없습니다."));
+		return;
+	}
+
+	EAppReturnType::Type ConfirmResult =DebugHeader::ShowMsgDialog(EAppMsgType::YesNo, TEXT("총  ") + FString::FromInt(AssetsPathNames.Num()) + TEXT(" 개의 에셋을 찾았습니다.\n삭제를 진행하시겠습니까?"));
+
+	if (ConfirmResult == EAppReturnType::No) return;
+
+	TArray<FAssetData> UnusedAssetsDataArray; // 사용되지 않는 에셋들을 담는 TArray변수
+
+	for (const FString& AssetPathName : AssetsPathNames)
+	{
+		// Root 폴더는 건드리면 안 된다. 프로젝트 파일 Content 밑의 Developer, Collection 폴더일 경우 continue
+		if (AssetPathName.Contains(TEXT("Developers")) || 	AssetPathName.Contains(TEXT("Collections")))
+		{
+			continue;
+		}
+
+		// 에셋이 없다면 continue
+		if (false == UEditorAssetLibrary::DoesAssetExist(AssetPathName)) continue;
+
+		// AssetReferencer변수에 referencers들의 package path를 담는다. 에셋 데이터가 아닌 path를 담는것이다.
+		TArray<FString> AssetReferencers = UEditorAssetLibrary::FindPackageReferencersForAsset(AssetPathName);
+
+		if (AssetReferencers.Num() == 0) // 해당 에셋이 사용되고 있지 않다면
+		{
+			// 에셋 데이터를 UnusedAssetsDataArray(=사용되지 않는 에셋들을 담는 TArray변수)에 추가
+			const FAssetData UnusedAssetData = UEditorAssetLibrary::FindAssetData(AssetPathName);
+			UnusedAssetsDataArray.Add(UnusedAssetData);
+		}
+	}
+
+	if (UnusedAssetsDataArray.Num() > 0) // 사용되지 않는 에셋이 0이상이라면
+	{
+		ObjectTools::DeleteAssets(UnusedAssetsDataArray); // UnusedAssetsDataArray를 삭제
+	}
+	else
+	{
+		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("선택한 폴더에서 사용하지 않는 에셋을 찾을 수 없습니다. 삭제할 수 없습니다.\n 에셋이 없거나 사용중입니다."));
+	}
 }
 
 #pragma endregion
