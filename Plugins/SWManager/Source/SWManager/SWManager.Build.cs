@@ -25,8 +25,7 @@ public class SWManager : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core", "Blutility", "EditorScriptingUtilities", "UMG", "Niagara"
-				// ... add other public dependencies that you statically link with here ...
+				"Core", "Blutility", "EditorScriptingUtilities", "UMG", "Niagara", "UnrealEd"
 			}
 			);
 			

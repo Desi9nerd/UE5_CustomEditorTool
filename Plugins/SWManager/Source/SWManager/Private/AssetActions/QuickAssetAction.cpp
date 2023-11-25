@@ -2,6 +2,7 @@
 #include "DebugHeader.h"
 #include "EditorUtilityLibrary.h"
 #include "EditorAssetLibrary.h"
+#include "ObjectTools.h"
 
 void UQuickAssetAction::DuplicateAssets(int32 NumOfDuplicates) // Asset 복제하기
 {
@@ -28,7 +29,7 @@ void UQuickAssetAction::DuplicateAssets(int32 NumOfDuplicates) // Asset 복제하기
 			if (UEditorAssetLibrary::DuplicateAsset(SourceAssetPath, NewPathName)) 
 			{
 				UEditorAssetLibrary::SaveAsset(NewPathName, false); // NewPathName경로에 Asset을 저장
-				++Counter;
+				++Counter; // 추후에 문구를 띄울때 몇개의 Asset들이 복제 됬는지 알아야하므로 수 기록
 			}
 		}
 	}
@@ -84,4 +85,34 @@ void UQuickAssetAction::AddPrefixes() // 접두어 달기
 	{
 		ShowNotifyInfo(TEXT("Successfully renamed " + FString::FromInt(Counter) + " assets"));
 	}
+}
+
+void UQuickAssetAction::RemoveUnusedAssets() // 사용하지 않는 Asset 제거
+{
+	TArray<FAssetData> SelectedAssetsData = UEditorUtilityLibrary::GetSelectedAssetData(); // 선택된 Asset들을 TArray변수에 다 담는다
+	TArray<FAssetData> UnusedAssetsData; // 사용되지 않은 Asset들을 담는 TArray변수 선언
+
+	for (const FAssetData& SelectedAssetData : SelectedAssetsData)
+	{
+		// 해당 SelectedAssetsData에 레퍼런스된게 있는지 찾는다
+		TArray<FString> AssetReferencers =
+			UEditorAssetLibrary::FindPackageReferencersForAsset(SelectedAssetData.ObjectPath.ToString());
+
+		if (AssetReferencers.Num() == 0) // 레퍼런스된게 없으면
+		{
+			UnusedAssetsData.Add(SelectedAssetData); // UnusedAssetsData에 해당 SelectedAssetData을 담는다
+		}
+	}
+
+	if (UnusedAssetsData.Num() == 0) // 사용되지 않는 Asset이 없다면(=Asset들이 모두 레퍼런스되어 있다면)
+	{
+		ShowMsgDialog(EAppMsgType::Ok, TEXT("No unused asset found among selected assets"), false);
+		return; // 리턴 종료
+	}
+
+	const int32 NumOfAssetsDeleted = ObjectTools::DeleteAssets(UnusedAssetsData); // UnusedAssetsData에 담긴 Asset들을 제거. 제거한 Asset 수를 NumOfAssetsDeleted변수에 기록
+
+	if (NumOfAssetsDeleted == 0) return; // 제거가 된 Asset이 없는 경우 리턴
+
+	ShowNotifyInfo(TEXT("Successfully deleted " + FString::FromInt(NumOfAssetsDeleted) + TEXT(" unused assets"))); // 언리얼 에디터 우측하단에 문구 띄우기
 }

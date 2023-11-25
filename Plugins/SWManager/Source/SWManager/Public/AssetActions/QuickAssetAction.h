@@ -32,6 +32,9 @@ public:
 	UFUNCTION(CallInEditor)
 	void AddPrefixes(); // 접두어 달기
 
+	UFUNCTION(CallInEditor)
+	void RemoveUnusedAssets(); // 사용하지 않는 Asset 제거
+
 private:
 	TMap<UClass*, FString>PrefixMap =
 	{
