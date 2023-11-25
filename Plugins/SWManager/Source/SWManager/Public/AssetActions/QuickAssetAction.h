@@ -36,6 +36,8 @@ public:
 	void RemoveUnusedAssets(); // 사용하지 않는 Asset 제거
 
 private:
+	void FixUpRedirectors(); // Fix Up Redirectors 
+
 	TMap<UClass*, FString>PrefixMap =
 	{
 		{UBlueprint::StaticClass(),TEXT("BP_")},

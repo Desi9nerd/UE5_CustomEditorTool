@@ -3,6 +3,8 @@
 #include "EditorUtilityLibrary.h"
 #include "EditorAssetLibrary.h"
 #include "ObjectTools.h"
+#include "AssetRegistry/AssetRegistryModule.h"
+#include "AssetToolsModule.h"
 
 void UQuickAssetAction::DuplicateAssets(int32 NumOfDuplicates) // Asset 복제하기
 {
@@ -92,6 +94,8 @@ void UQuickAssetAction::RemoveUnusedAssets() // 사용하지 않는 Asset 제거
 	TArray<FAssetData> SelectedAssetsData = UEditorUtilityLibrary::GetSelectedAssetData(); // 선택된 Asset들을 TArray변수에 다 담는다
 	TArray<FAssetData> UnusedAssetsData; // 사용되지 않은 Asset들을 담는 TArray변수 선언
 
+	FixUpRedirectors(); // 파일 경로 관련
+
 	for (const FAssetData& SelectedAssetData : SelectedAssetsData)
 	{
 		// 해당 SelectedAssetsData에 레퍼런스된게 있는지 찾는다
@@ -115,4 +119,32 @@ void UQuickAssetAction::RemoveUnusedAssets() // 사용하지 않는 Asset 제거
 	if (NumOfAssetsDeleted == 0) return; // 제거가 된 Asset이 없는 경우 리턴
 
 	ShowNotifyInfo(TEXT("Successfully deleted " + FString::FromInt(NumOfAssetsDeleted) + TEXT(" unused assets"))); // 언리얼 에디터 우측하단에 문구 띄우기
+}
+
+void UQuickAssetAction::FixUpRedirectors()
+{
+	TArray<UObjectRedirector*> RedirectorsToFixArray;
+
+	FAssetRegistryModule& AssetRegistryModule = FModuleManager::Get().LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry")); 
+
+	FARFilter Filter;
+	Filter.bRecursivePaths = true; // subfolder에 접근이 가능하도록 true 설정
+	Filter.PackagePaths.Emplace("/Game"); // 어떤 폴더에 접근할 지 경로 설정
+	Filter.ClassNames.Emplace("ObjectRedirector"); // 필터 하기를 희망하는 클래스의 이름
+
+	TArray<FAssetData> OutRedirectors; // 결과를 저장할 TArry 변수
+
+	AssetRegistryModule.Get().GetAssets(Filter, OutRedirectors); // Filter한 결과를 OutRedirectors에 담는다
+
+	for (const FAssetData& RedirectorData : OutRedirectors)
+	{
+		if (UObjectRedirector* RedirectorToFix = Cast<UObjectRedirector>(RedirectorData.GetAsset())) // Redirect 할게 있다면
+		{
+			RedirectorsToFixArray.Add(RedirectorToFix); // RedirectorsToFixArray에 RedirectorToFix 담음
+		}
+	}
+
+	FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>(TEXT("AssetTools"));
+
+	AssetToolsModule.Get().FixupReferencers(RedirectorsToFixArray);
 }
