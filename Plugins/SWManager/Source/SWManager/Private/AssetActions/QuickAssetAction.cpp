@@ -11,7 +11,7 @@ void UQuickAssetAction::DuplicateAssets(int32 NumOfDuplicates) // Asset 복제하기
 	if (NumOfDuplicates <= 0) // 복사 개수가 0이하라면
 	{
 		// DebugHeader.h에 만든 ShowMsgDialog함수를 콜해 아래의 문구를 띄운다.
-		ShowMsgDialog(EAppMsgType::Ok, TEXT("Please enter a VALID number"));
+		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("Please enter a VALID number"));
 		return;
 	}
 
@@ -39,7 +39,7 @@ void UQuickAssetAction::DuplicateAssets(int32 NumOfDuplicates) // Asset 복제하기
 	if (Counter > 0) // 복제가 0 초과면 문구 띄우기
 	{
 		// DebugHeader.h에 만든 ShowNotifyInfo함수를 콜해 언리얼에디터 우측 하단에 아래의 문구를 띄운다.
-		ShowNotifyInfo(TEXT("Successfully duplicated " + FString::FromInt(Counter) + " files"));
+		DebugHeader::ShowNotifyInfo(TEXT("Successfully duplicated " + FString::FromInt(Counter) + " files"));
 	}
 }
 
@@ -56,7 +56,7 @@ void UQuickAssetAction::AddPrefixes() // 접두어 달기
 
 		if (nullptr == PrefixFound || PrefixFound->IsEmpty()) // PrefixFound가 없다면
 		{
-			Print(TEXT("Failed to find prefix for class ") + SelectedObject->GetClass()->GetName(), FColor::Red); 
+			DebugHeader::Print(TEXT("Failed to find prefix for class ") + SelectedObject->GetClass()->GetName(), FColor::Red); 
 			continue;
 		}
 
@@ -65,7 +65,7 @@ void UQuickAssetAction::AddPrefixes() // 접두어 달기
 		if (OldName.StartsWith(*PrefixFound)) // 기존이름에 이미 해당 접두어가 있는 경우
 		{
 			// 아래 문구를 띄우고 continue하여 지금 Asset은 작업하지 않고 넘어가고 다음 Asset에 접두어 적용
-			Print(OldName + TEXT(" already has prefix added"), FColor::Red);
+			DebugHeader::Print(OldName + TEXT(" already has prefix added"), FColor::Red);
 			continue;
 		}
 
@@ -85,7 +85,7 @@ void UQuickAssetAction::AddPrefixes() // 접두어 달기
 
 	if (Counter > 0)
 	{
-		ShowNotifyInfo(TEXT("Successfully renamed " + FString::FromInt(Counter) + " assets"));
+		DebugHeader::ShowNotifyInfo(TEXT("Successfully renamed " + FString::FromInt(Counter) + " assets"));
 	}
 }
 
@@ -110,7 +110,7 @@ void UQuickAssetAction::RemoveUnusedAssets() // 사용하지 않는 Asset 제거
 
 	if (UnusedAssetsData.Num() == 0) // 사용되지 않는 Asset이 없다면(=Asset들이 모두 레퍼런스되어 있다면)
 	{
-		ShowMsgDialog(EAppMsgType::Ok, TEXT("No unused asset found among selected assets"), false);
+		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("No unused asset found among selected assets"), false);
 		return; // 리턴 종료
 	}
 
@@ -118,7 +118,7 @@ void UQuickAssetAction::RemoveUnusedAssets() // 사용하지 않는 Asset 제거
 
 	if (NumOfAssetsDeleted == 0) return; // 제거가 된 Asset이 없는 경우 리턴
 
-	ShowNotifyInfo(TEXT("Successfully deleted " + FString::FromInt(NumOfAssetsDeleted) + TEXT(" unused assets"))); // 언리얼 에디터 우측하단에 문구 띄우기
+	DebugHeader::ShowNotifyInfo(TEXT("Successfully deleted " + FString::FromInt(NumOfAssetsDeleted) + TEXT(" unused assets"))); // 언리얼 에디터 우측하단에 문구 띄우기
 }
 
 void UQuickAssetAction::FixUpRedirectors()
