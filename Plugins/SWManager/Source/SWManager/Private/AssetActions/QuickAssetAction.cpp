@@ -2,13 +2,15 @@
 #include "DebugHeader.h"
 #include "EditorUtilityLibrary.h"
 #include "EditorAssetLibrary.h"
+#include "Misc/MessageDialog.h"
 
 void UQuickAssetAction::DuplicateAssets(int32 NumOfDuplicates) // Asset 복제하기
 {
 	if (NumOfDuplicates <= 0) // 복사 개수가 0이하라면
 	{
 		// 잘못됬다는 문구를 띄우고 리턴한다
-		Print(TEXT("Please enter a VALID number"), FColor::Red);
+		FText MsgTitle = FText::FromString(TEXT("Warning"));
+		FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(TEXT("Please enter a VALID number")), &MsgTitle);
 		return;
 	}
 
