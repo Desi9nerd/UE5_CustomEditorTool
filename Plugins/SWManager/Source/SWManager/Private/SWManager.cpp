@@ -59,6 +59,14 @@ void FSWManagerModule::AddCBMenuEntry(FMenuBuilder& MenuBuilder) // ContentBrows
 		FSlateIcon(), // Custom Icon
 		FExecuteAction::CreateRaw(this, &FSWManagerModule::OnDeleteUnsuedAssetButtonClicked) // 실행될 함수
 	);
+
+	MenuBuilder.AddMenuEntry
+	(
+		FText::FromString(TEXT("사용하지 않은 폴더 제거하기")), // Menu Entry의 이름
+		FText::FromString(TEXT("빈 폴더를 안전하게 지우는 기능")), // Tooltip 설명
+		FSlateIcon(), // Custom Icon
+		FExecuteAction::CreateRaw(this, &FSWManagerModule::OnDeleteEmptyFoldersButtonClicked) // 실행될 함수
+	);
 }
 
 void FSWManagerModule::OnDeleteUnsuedAssetButtonClicked()  // 에셋 삭제
@@ -115,6 +123,59 @@ void FSWManagerModule::OnDeleteUnsuedAssetButtonClicked()  // 에셋 삭제
 	else
 	{
 		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("선택한 폴더에서 사용하지 않는 에셋을 찾을 수 없습니다. 삭제할 수 없습니다.\n 에셋이 없거나 사용중입니다."), false);
+	}
+}
+
+void FSWManagerModule::OnDeleteEmptyFoldersButtonClicked() // 사용하지 않는 Folder 제거
+{
+	FixUpRedirectors(); // 경로가 문제되지 않도록 체크 후 업데이트
+	
+	TArray<FString> FolderPathsArray = UEditorAssetLibrary::ListAssets(FolderPathsSelected[0], true, true); // 선택된 폴더(FolderPathsSelected[0]) 내에 있는 모든 에셋+폴더들을 FolderPathsArray변수에 담는다
+	uint32 Counter = 0;
+
+	FString EmptyFolderPathsNames;
+	TArray<FString> EmptyFoldersPathsArray; // 빈 폴더들을 담을 TArray변수
+
+	for (const FString& FolderPath : FolderPathsArray)
+	{
+		// Root 폴더는 건드리면 안 된다. 프로젝트 파일 Content 밑의 Developer, Collection, __ExternalActors__, __ExternalObjects__폴더일 경우 continue
+		if (FolderPath.Contains(TEXT("Developers")) || FolderPath.Contains(TEXT("Collections")) ||
+			FolderPath.Contains(TEXT("__ExternalActors__")) || FolderPath.Contains(TEXT("__ExternalObjects__")))
+		{
+			continue;
+		}
+
+		// 폴더가 없다면 continue
+		if (false == UEditorAssetLibrary::DoesDirectoryExist(FolderPath)) continue;
+
+		// FolderPath에 에셋이 없다면
+		if (false == UEditorAssetLibrary::DoesDirectoryHaveAssets(FolderPath))
+		{
+			EmptyFolderPathsNames.Append(FolderPath);
+			EmptyFolderPathsNames.Append(TEXT("\n"));
+
+			EmptyFoldersPathsArray.Add(FolderPath); // EmptyFoldersPathsArray배열에 빈 폴더의 FolderPath를 추가
+		}
+	}
+
+	if (EmptyFoldersPathsArray.Num() == 0) // 빈 폴더가 없다면
+	{
+		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("선택한 폴더들 중 빈 폴더를 찾지 못 했습니다."), false);
+		return;
+	}
+
+	EAppReturnType::Type ConfirmResult = DebugHeader::ShowMsgDialog(EAppMsgType::OkCancel, TEXT("빈 폴더  ") + EmptyFolderPathsNames + TEXT(" 를 찾았습니다. \n 모두 삭제 하시겠습니까?"), false);
+
+	if (ConfirmResult == EAppReturnType::Cancel) return; // Cancel를 누르면 삭제하지 않고 종료
+
+	for (const FString& EmptyFolderPath : EmptyFoldersPathsArray)
+	{
+		UEditorAssetLibrary::DeleteDirectory(EmptyFolderPath) ? ++Counter : DebugHeader::Print(TEXT("폴더 " + EmptyFolderPath + " 삭제를 실패했습니다."), FColor::Red); // 디버깅 메시지 띄우기
+	}
+
+	if (Counter > 0)
+	{
+		DebugHeader::ShowNotifyInfo(TEXT("폴더 ") + FString::FromInt(Counter) + TEXT("개를 성공적으로 삭제했습니다."));
 	}
 }
 
