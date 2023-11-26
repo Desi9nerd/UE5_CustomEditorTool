@@ -21,7 +21,9 @@ private:
 
 	void AddCBMenuEntry(class FMenuBuilder& MenuBuilder);
 	
-	void OnDeleteUnsuedAssetButtonClicked(); // 에셋 삭제
+	void OnDeleteUnsuedAssetButtonClicked(); // 사용하지 않는 Asset 제거
+
+	void FixUpRedirectors(); // Fix Up Redirectors 
 
 #pragma endregion
 };

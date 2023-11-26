@@ -3,6 +3,8 @@
 #include "DebugHeader.h"
 #include "EditorAssetLibrary.h"
 #include "ObjectTools.h"
+#include "AssetRegistryModule.h"
+#include "AssetToolsModule.h"
 
 #define LOCTEXT_NAMESPACE "FSWManagerModule"
 
@@ -111,6 +113,33 @@ void FSWManagerModule::OnDeleteUnsuedAssetButtonClicked()  // 에셋 삭제
 	{
 		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("선택한 폴더에서 사용하지 않는 에셋을 찾을 수 없습니다. 삭제할 수 없습니다.\n 에셋이 없거나 사용중입니다."));
 	}
+}
+
+void FSWManagerModule::FixUpRedirectors()
+{
+	TArray<UObjectRedirector*> RedirectorsToFixArray;
+
+	FAssetRegistryModule& AssetRegistryModule = FModuleManager::Get().LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+
+	FARFilter Filter;
+	Filter.bRecursivePaths = true; // subfolder에 접근이 가능하도록 true 설정
+	Filter.PackagePaths.Emplace("/Game"); // 어떤 폴더에 접근할 지 경로 설정
+	Filter.ClassNames.Emplace("ObjectRedirector"); // 필터 하기를 희망하는 클래스의 이름
+
+	TArray<FAssetData> OutRedirectors; // 결과를 저장할 TArry 변수
+	AssetRegistryModule.Get().GetAssets(Filter, OutRedirectors); // Filter한 결과를 OutRedirectors에 담는다
+
+	for (const FAssetData& RedirectorData : OutRedirectors)
+	{
+		if (UObjectRedirector* RedirectorToFix = Cast<UObjectRedirector>(RedirectorData.GetAsset())) // Redirect 할게 있다면
+		{
+			RedirectorsToFixArray.Add(RedirectorToFix); // RedirectorsToFixArray에 RedirectorToFix 담음
+		}
+	}
+
+	FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>(TEXT("AssetTools"));
+
+	AssetToolsModule.Get().FixupReferencers(RedirectorsToFixArray);
 }
 
 #pragma endregion

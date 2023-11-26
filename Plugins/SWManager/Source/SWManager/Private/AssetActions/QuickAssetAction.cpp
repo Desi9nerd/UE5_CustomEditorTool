@@ -3,7 +3,7 @@
 #include "EditorUtilityLibrary.h"
 #include "EditorAssetLibrary.h"
 #include "ObjectTools.h"
-#include "AssetRegistry/AssetRegistryModule.h"
+#include "AssetRegistryModule.h"
 #include "AssetToolsModule.h"
 
 void UQuickAssetAction::DuplicateAssets(int32 NumOfDuplicates) // Asset 복제하기
