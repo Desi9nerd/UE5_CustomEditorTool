@@ -28,21 +28,21 @@ void FSWManagerModule::InitCBMenuExtention()
 	CustomCBMenuDelegate.BindRaw(this, &FSWManagerModule::CustomCBMenuExtender);
 	ContentBrowserModuleMenuExtenders.Add(CustomCBMenuDelegate); //아래의 한줄과 같은 의미 */
 
-	// ContentBrowserModuleMenuExtenders에 항목을 추가하고 FContentBrowserMenuExtender_SelectedPaths에 this(=FSWManagerModule)를 생성하고 CustomCBMenuExtender함수를 Bind 한다.
+	// ContentBrowserModuleMenuExtenders에 항목을 추가하고 FContentBrowserMenuExtender_SelectedPaths에 this(=FSWManagerModule)를 생성하고 CustomCBMenuExtender함수를 Bind 한다. 다른말로 표현하면, 현재 존재하는 모든 delegates들에 내가 만든 CustomCBMenuExtender 델리게이트를 추가한다.
 	ContentBrowserModuleMenuExtenders.Add(FContentBrowserMenuExtender_SelectedPaths::CreateRaw(this, &FSWManagerModule::CustomCBMenuExtender));
 }
 
-TSharedRef<FExtender> FSWManagerModule::CustomCBMenuExtender(const TArray<FString>& SelectedPaths) // 우클릭 시 ContentBrowserMenu에 노출시켜질 위치
+TSharedRef<FExtender> FSWManagerModule::CustomCBMenuExtender(const TArray<FString>& SelectedPaths) // 우클릭 시 ContentBrowserMenu에 노출시켜질 위치를 정의해주기
 {
 	TSharedRef<FExtender> MenuExtender(new FExtender());
 
 	if (SelectedPaths.Num() > 0)
 	{
 		// MenuExtender의 "Delete"위치 뒤에 UICommandList를 추가하고 AddCBMenuEntry함수를 Bind 한다.
-		MenuExtender->AddMenuExtension(FName("Delete"),
-			EExtensionHook::After,
-			TSharedPtr<FUICommandList>(),
-			FMenuExtensionDelegate::CreateRaw(this, &FSWManagerModule::AddCBMenuEntry));
+		MenuExtender->AddMenuExtension(FName("Delete"), // Extension hook, 삽입할 위치
+			EExtensionHook::After,						// Delete 뒤에 들어가게 After 설정
+			TSharedPtr<FUICommandList>(),				// Custom hot keys
+			FMenuExtensionDelegate::CreateRaw(this, &FSWManagerModule::AddCBMenuEntry)); // Second binding, Menu Entry에 노출될 디테일을 정의해줄 AddCBMenuEntry를 바인딩
 
 		FolderPathsSelected = SelectedPaths; // 유저가 현재 선택한 폴더에 접근할 수 있도록 SelectedPaths를 FolderPathsSelected변수에 담는다
 	}
@@ -54,10 +54,10 @@ void FSWManagerModule::AddCBMenuEntry(FMenuBuilder& MenuBuilder) // ContentBrows
 {
 	MenuBuilder.AddMenuEntry
 	(
-		FText::FromString(TEXT("사용하지 않은 에셋 제거하기")),
-		FText::FromString(TEXT("폴더에서 사용하지 않는 에셋들을 안전하게 지우는 기능")),
-		FSlateIcon(),
-		FExecuteAction::CreateRaw(this, &FSWManagerModule::OnDeleteUnsuedAssetButtonClicked)
+		FText::FromString(TEXT("사용하지 않은 에셋 제거하기")), // Menu Entry의 이름
+		FText::FromString(TEXT("폴더에서 사용하지 않는 에셋들을 안전하게 지우는 기능")), // Tooltip 설명
+		FSlateIcon(), // Custom Icon
+		FExecuteAction::CreateRaw(this, &FSWManagerModule::OnDeleteUnsuedAssetButtonClicked) // 실행될 함수
 	);
 }
 
@@ -71,24 +71,25 @@ void FSWManagerModule::OnDeleteUnsuedAssetButtonClicked()  // 에셋 삭제
 
 	TArray<FString> AssetsPathNames = UEditorAssetLibrary::ListAssets(FolderPathsSelected[0]); // 선택된 폴더(FolderPathsSelected[0]) 내에 있는 모든 에셋들을 AssetsPathNames변수에 담는다
 
-	if (AssetsPathNames.Num() == 0) // 폴더를 선택하지 않은 경우
+	if (AssetsPathNames.Num() == 0) // 폴더 내에서 에셋을 찾지 못한 경우
 	{
-		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("선택한 폴더에서 아무런 에셋을 찾을 수 없습니다."));
+		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("선택한 폴더에서 아무런 에셋을 찾을 수 없습니다."), false);
 		return;
 	}
 
-	EAppReturnType::Type ConfirmResult =DebugHeader::ShowMsgDialog(EAppMsgType::YesNo, TEXT("총  ") + FString::FromInt(AssetsPathNames.Num()) + TEXT(" 개의 에셋을 찾았습니다.\n삭제를 진행하시겠습니까?"));
+	EAppReturnType::Type ConfirmResult =DebugHeader::ShowMsgDialog(EAppMsgType::YesNo, TEXT("총  ") + FString::FromInt(AssetsPathNames.Num()) + TEXT(" 개의 에셋을 찾았습니다.\n사용하지 않는지 체크 후 삭제를 진행하시겠습니까?"), false);
 
-	if (ConfirmResult == EAppReturnType::No) return;
+	if (ConfirmResult == EAppReturnType::No) return; // 유저가 No를 누르면 삭제를 진행하지 않고 바로 종료
 
-	FixUpRedirectors();
+	FixUpRedirectors(); // 경로가 문제되지 않도록 체크 후 업데이트
 
 	TArray<FAssetData> UnusedAssetsDataArray; // 사용되지 않는 에셋들을 담는 TArray변수
 
 	for (const FString& AssetPathName : AssetsPathNames)
 	{
 		// Root 폴더는 건드리면 안 된다. 프로젝트 파일 Content 밑의 Developer, Collection 폴더일 경우 continue
-		if (AssetPathName.Contains(TEXT("Developers")) || 	AssetPathName.Contains(TEXT("Collections")))
+		if (AssetPathName.Contains(TEXT("Developers")) || 	AssetPathName.Contains(TEXT("Collections")) ||
+			AssetPathName.Contains(TEXT("__ExternalActors__")) || 	AssetPathName.Contains(TEXT("__ExternalObjects__")))
 		{
 			continue;
 		}
@@ -113,7 +114,7 @@ void FSWManagerModule::OnDeleteUnsuedAssetButtonClicked()  // 에셋 삭제
 	}
 	else
 	{
-		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("선택한 폴더에서 사용하지 않는 에셋을 찾을 수 없습니다. 삭제할 수 없습니다.\n 에셋이 없거나 사용중입니다."));
+		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("선택한 폴더에서 사용하지 않는 에셋을 찾을 수 없습니다. 삭제할 수 없습니다.\n 에셋이 없거나 사용중입니다."), false);
 	}
 }
 
