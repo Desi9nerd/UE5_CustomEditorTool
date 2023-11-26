@@ -1,4 +1,4 @@
-#include "AssetActions/QuickAssetAction.h"
+ï»¿#include "AssetActions/QuickAssetAction.h"
 #include "DebugHeader.h"
 #include "EditorUtilityLibrary.h"
 #include "EditorAssetLibrary.h"
@@ -6,11 +6,11 @@
 #include "AssetRegistryModule.h"
 #include "AssetToolsModule.h"
 
-void UQuickAssetAction::DuplicateAssets(int32 NumOfDuplicates) // Asset º¹Á¦ÇÏ±â
+void UQuickAssetAction::DuplicateAssets(int32 NumOfDuplicates) // Asset ë³µì œí•˜ê¸°
 {
-	if (NumOfDuplicates <= 0) // º¹»ç °³¼ö°¡ 0ÀÌÇÏ¶ó¸é
+	if (NumOfDuplicates <= 0) // ë³µì‚¬ ê°œìˆ˜ê°€ 0ì´í•˜ë¼ë©´
 	{
-		// DebugHeader.h¿¡ ¸¸µç ShowMsgDialogÇÔ¼ö¸¦ ÄİÇØ ¾Æ·¡ÀÇ ¹®±¸¸¦ ¶ç¿î´Ù.
+		// DebugHeader.hì— ë§Œë“  ShowMsgDialogí•¨ìˆ˜ë¥¼ ì½œí•´ ì•„ë˜ì˜ ë¬¸êµ¬ë¥¼ ë„ìš´ë‹¤.
 		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("Please enter a VALID number"));
 		return;
 	}
@@ -22,39 +22,39 @@ void UQuickAssetAction::DuplicateAssets(int32 NumOfDuplicates) // Asset º¹Á¦ÇÏ±â
 	{
 		for (int32 i = 0; i < NumOfDuplicates; i++)
 		{
-			// Asset °æ·Î, ÀÌ¸§Áş±â, º¹Á¦µÉ AssetÀÇ °æ·Î
+			// Asset ê²½ë¡œ, ì´ë¦„ì§“ê¸°, ë³µì œë  Assetì˜ ê²½ë¡œ
 			const FString SourceAssetPath = SelectedAssetData.ObjectPath.ToString();
 			const FString NewDuplicatedAssetName = SelectedAssetData.AssetName.ToString() + TEXT("_") + FString::FromInt(i + 1);
 			const FString NewPathName = FPaths::Combine(SelectedAssetData.PackagePath.ToString(), NewDuplicatedAssetName);
 
-			// SourceAssetPath°æ·Î¿¡ ÀÖ´Â AssetÀ» NewPathName°æ·Î·Î º¹Á¦
+			// SourceAssetPathê²½ë¡œì— ìˆëŠ” Assetì„ NewPathNameê²½ë¡œë¡œ ë³µì œ
 			if (UEditorAssetLibrary::DuplicateAsset(SourceAssetPath, NewPathName)) 
 			{
-				UEditorAssetLibrary::SaveAsset(NewPathName, false); // NewPathName°æ·Î¿¡ AssetÀ» ÀúÀå
-				++Counter; // ÃßÈÄ¿¡ ¹®±¸¸¦ ¶ç¿ï¶§ ¸î°³ÀÇ AssetµéÀÌ º¹Á¦ ‰ç´ÂÁö ¾Ë¾Æ¾ßÇÏ¹Ç·Î ¼ö ±â·Ï
+				UEditorAssetLibrary::SaveAsset(NewPathName, false); // NewPathNameê²½ë¡œì— Assetì„ ì €ì¥
+				++Counter; // ì¶”í›„ì— ë¬¸êµ¬ë¥¼ ë„ìš¸ë•Œ ëª‡ê°œì˜ Assetë“¤ì´ ë³µì œ ë¬ëŠ”ì§€ ì•Œì•„ì•¼í•˜ë¯€ë¡œ ìˆ˜ ê¸°ë¡
 			}
 		}
 	}
 
-	if (Counter > 0) // º¹Á¦°¡ 0 ÃÊ°ú¸é ¹®±¸ ¶ç¿ì±â
+	if (Counter > 0) // ë³µì œê°€ 0 ì´ˆê³¼ë©´ ë¬¸êµ¬ ë„ìš°ê¸°
 	{
-		// DebugHeader.h¿¡ ¸¸µç ShowNotifyInfoÇÔ¼ö¸¦ ÄİÇØ ¾ğ¸®¾ó¿¡µğÅÍ ¿ìÃø ÇÏ´Ü¿¡ ¾Æ·¡ÀÇ ¹®±¸¸¦ ¶ç¿î´Ù.
+		// DebugHeader.hì— ë§Œë“  ShowNotifyInfoí•¨ìˆ˜ë¥¼ ì½œí•´ ì–¸ë¦¬ì–¼ì—ë””í„° ìš°ì¸¡ í•˜ë‹¨ì— ì•„ë˜ì˜ ë¬¸êµ¬ë¥¼ ë„ìš´ë‹¤.
 		DebugHeader::ShowNotifyInfo(TEXT("Successfully duplicated " + FString::FromInt(Counter) + " files"));
 	}
 }
 
-void UQuickAssetAction::AddPrefixes() // Á¢µÎ¾î ´Ş±â
+void UQuickAssetAction::AddPrefixes() // ì ‘ë‘ì–´ ë‹¬ê¸°
 {
-	TArray<UObject*>SelectedObjects = UEditorUtilityLibrary::GetSelectedAssets(); // ¼±ÅÃµÈ AssetµéÀ» TArrayº¯¼ö¿¡ ´Ù ´ã´Â´Ù
+	TArray<UObject*>SelectedObjects = UEditorUtilityLibrary::GetSelectedAssets(); // ì„ íƒëœ Assetë“¤ì„ TArrayë³€ìˆ˜ì— ë‹¤ ë‹´ëŠ”ë‹¤
 	uint32 Counter = 0;
 
 	for (UObject* SelectedObject : SelectedObjects)
 	{
-		if (false == IsValid(SelectedObject)) continue; // ¼±ÅÃµÈ AssetÀÌ ¾øÀ¸¸é ¸®ÅÏ
+		if (false == IsValid(SelectedObject)) continue; // ì„ íƒëœ Assetì´ ì—†ìœ¼ë©´ ë¦¬í„´
 
-		FString* PrefixFound = PrefixMap.Find(SelectedObject->GetClass()); // PrefixMap¿¡¼­ ¾Ë¸Â´Â Á¢µÎ¾î¸¦ Ã£¾Æ º¯¼ö¿¡ ´ã´Â´Ù
+		FString* PrefixFound = PrefixMap.Find(SelectedObject->GetClass()); // PrefixMapì—ì„œ ì•Œë§ëŠ” ì ‘ë‘ì–´ë¥¼ ì°¾ì•„ ë³€ìˆ˜ì— ë‹´ëŠ”ë‹¤
 
-		if (nullptr == PrefixFound || PrefixFound->IsEmpty()) // PrefixFound°¡ ¾ø´Ù¸é
+		if (nullptr == PrefixFound || PrefixFound->IsEmpty()) // PrefixFoundê°€ ì—†ë‹¤ë©´
 		{
 			DebugHeader::Print(TEXT("Failed to find prefix for class ") + SelectedObject->GetClass()->GetName(), FColor::Red); 
 			continue;
@@ -62,25 +62,25 @@ void UQuickAssetAction::AddPrefixes() // Á¢µÎ¾î ´Ş±â
 
 		FString OldName = SelectedObject->GetName();
 
-		if (OldName.StartsWith(*PrefixFound)) // ±âÁ¸ÀÌ¸§¿¡ ÀÌ¹Ì ÇØ´ç Á¢µÎ¾î°¡ ÀÖ´Â °æ¿ì
+		if (OldName.StartsWith(*PrefixFound)) // ê¸°ì¡´ì´ë¦„ì— ì´ë¯¸ í•´ë‹¹ ì ‘ë‘ì–´ê°€ ìˆëŠ” ê²½ìš°
 		{
-			// ¾Æ·¡ ¹®±¸¸¦ ¶ç¿ì°í continueÇÏ¿© Áö±İ AssetÀº ÀÛ¾÷ÇÏÁö ¾Ê°í ³Ñ¾î°¡°í ´ÙÀ½ Asset¿¡ Á¢µÎ¾î Àû¿ë
+			// ì•„ë˜ ë¬¸êµ¬ë¥¼ ë„ìš°ê³  continueí•˜ì—¬ ì§€ê¸ˆ Assetì€ ì‘ì—…í•˜ì§€ ì•Šê³  ë„˜ì–´ê°€ê³  ë‹¤ìŒ Assetì— ì ‘ë‘ì–´ ì ìš©
 			DebugHeader::Print(OldName + TEXT(" already has prefix added"), FColor::Red);
 			continue;
 		}
 
-		//** Material¿¡¼­ Material Instance¸¦ »ı¼ºÇÏ´Â °æ¿ì ¾ğ¸®¾ó¿¡¼­ ÆÄÀÏ¸í ³¡¿¡ _InstÀ» ÀÚµ¿À¸·Î ºÙÀÎ´Ù. µû¶ó¼­ ¾Õ¿¡ M_°ú ³¡¿¡ _Inst¸¦ Á¦°ÅÇØÁØ´Ù. ±×·¯¸é ÃßÈÄ¿¡ Á¢µÎ¾î MI_°¡ Á¤»óÀûÀ» ºÙ´Â´Ù.
-		if (SelectedObject->IsA<UMaterialInstanceConstant>()) // ¼±ÅÃÇÑ AssetÀÌ Material Instance¶ó¸é
+		//** Materialì—ì„œ Material Instanceë¥¼ ìƒì„±í•˜ëŠ” ê²½ìš° ì–¸ë¦¬ì–¼ì—ì„œ íŒŒì¼ëª… ëì— _Instì„ ìë™ìœ¼ë¡œ ë¶™ì¸ë‹¤. ë”°ë¼ì„œ ì•ì— M_ê³¼ ëì— _Instë¥¼ ì œê±°í•´ì¤€ë‹¤. ê·¸ëŸ¬ë©´ ì¶”í›„ì— ì ‘ë‘ì–´ MI_ê°€ ì •ìƒì ì„ ë¶™ëŠ”ë‹¤.
+		if (SelectedObject->IsA<UMaterialInstanceConstant>()) // ì„ íƒí•œ Assetì´ Material Instanceë¼ë©´
 		{
 			OldName.RemoveFromStart(TEXT("M_"));
 			OldName.RemoveFromEnd(TEXT("_Inst"));
 		}
 
-		const FString NewNameWithPrefix = *PrefixFound + OldName; // 'Á¢µÎ¾î+±âÁ¸ÀÌ¸§' º¯¼ö¿¡ ´ãÀ½
+		const FString NewNameWithPrefix = *PrefixFound + OldName; // 'ì ‘ë‘ì–´+ê¸°ì¡´ì´ë¦„' ë³€ìˆ˜ì— ë‹´ìŒ
 
-		UEditorUtilityLibrary::RenameAsset(SelectedObject, NewNameWithPrefix); // ¼±ÅÃµÈ AssetÀ» »õ·Î¿î ÀÌ¸§À¸·Î ÀÌ¸§ º¯°æ
+		UEditorUtilityLibrary::RenameAsset(SelectedObject, NewNameWithPrefix); // ì„ íƒëœ Assetì„ ìƒˆë¡œìš´ ì´ë¦„ìœ¼ë¡œ ì´ë¦„ ë³€ê²½
 
-		++Counter; // ÃßÈÄ¿¡ ¹®±¸¸¦ ¶ç¿ï¶§ ¸î°³ÀÇ AssetµéÀÌ ÀÌ¸§º¯°æ ‰ç´ÂÁö ¾Ë¾Æ¾ßÇÏ¹Ç·Î ±â·Ï
+		++Counter; // ì¶”í›„ì— ë¬¸êµ¬ë¥¼ ë„ìš¸ë•Œ ëª‡ê°œì˜ Assetë“¤ì´ ì´ë¦„ë³€ê²½ ë¬ëŠ”ì§€ ì•Œì•„ì•¼í•˜ë¯€ë¡œ ê¸°ë¡
 	}
 
 	if (Counter > 0)
@@ -89,36 +89,36 @@ void UQuickAssetAction::AddPrefixes() // Á¢µÎ¾î ´Ş±â
 	}
 }
 
-void UQuickAssetAction::RemoveUnusedAssets() // »ç¿ëÇÏÁö ¾Ê´Â Asset Á¦°Å
+void UQuickAssetAction::RemoveUnusedAssets() // ì‚¬ìš©í•˜ì§€ ì•ŠëŠ” Asset ì œê±°
 {
-	TArray<FAssetData> SelectedAssetsData = UEditorUtilityLibrary::GetSelectedAssetData(); // ¼±ÅÃµÈ AssetµéÀ» TArrayº¯¼ö¿¡ ´Ù ´ã´Â´Ù
-	TArray<FAssetData> UnusedAssetsData; // »ç¿ëµÇÁö ¾ÊÀº AssetµéÀ» ´ã´Â TArrayº¯¼ö ¼±¾ğ
+	TArray<FAssetData> SelectedAssetsData = UEditorUtilityLibrary::GetSelectedAssetData(); // ì„ íƒëœ Assetë“¤ì„ TArrayë³€ìˆ˜ì— ë‹¤ ë‹´ëŠ”ë‹¤
+	TArray<FAssetData> UnusedAssetsData; // ì‚¬ìš©ë˜ì§€ ì•Šì€ Assetë“¤ì„ ë‹´ëŠ” TArrayë³€ìˆ˜ ì„ ì–¸
 
-	FixUpRedirectors(); // ÆÄÀÏ °æ·Î °ü·Ã
+	FixUpRedirectors(); // íŒŒì¼ ê²½ë¡œ ê´€ë ¨
 
 	for (const FAssetData& SelectedAssetData : SelectedAssetsData)
 	{
-		// ÇØ´ç SelectedAssetsData¿¡ ·¹ÆÛ·±½ºµÈ°Ô ÀÖ´ÂÁö Ã£´Â´Ù
+		// í•´ë‹¹ SelectedAssetsDataì— ë ˆí¼ëŸ°ìŠ¤ëœê²Œ ìˆëŠ”ì§€ ì°¾ëŠ”ë‹¤
 		TArray<FString> AssetReferencers =
 			UEditorAssetLibrary::FindPackageReferencersForAsset(SelectedAssetData.ObjectPath.ToString());
 
-		if (AssetReferencers.Num() == 0) // ·¹ÆÛ·±½ºµÈ°Ô ¾øÀ¸¸é
+		if (AssetReferencers.Num() == 0) // ë ˆí¼ëŸ°ìŠ¤ëœê²Œ ì—†ìœ¼ë©´
 		{
-			UnusedAssetsData.Add(SelectedAssetData); // UnusedAssetsData¿¡ ÇØ´ç SelectedAssetDataÀ» ´ã´Â´Ù
+			UnusedAssetsData.Add(SelectedAssetData); // UnusedAssetsDataì— í•´ë‹¹ SelectedAssetDataì„ ë‹´ëŠ”ë‹¤
 		}
 	}
 
-	if (UnusedAssetsData.Num() == 0) // »ç¿ëµÇÁö ¾Ê´Â AssetÀÌ ¾ø´Ù¸é(=AssetµéÀÌ ¸ğµÎ ·¹ÆÛ·±½ºµÇ¾î ÀÖ´Ù¸é)
+	if (UnusedAssetsData.Num() == 0) // ì‚¬ìš©ë˜ì§€ ì•ŠëŠ” Assetì´ ì—†ë‹¤ë©´(=Assetë“¤ì´ ëª¨ë‘ ë ˆí¼ëŸ°ìŠ¤ë˜ì–´ ìˆë‹¤ë©´)
 	{
 		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("No unused asset found among selected assets"), false);
-		return; // ¸®ÅÏ Á¾·á
+		return; // ë¦¬í„´ ì¢…ë£Œ
 	}
 
-	const int32 NumOfAssetsDeleted = ObjectTools::DeleteAssets(UnusedAssetsData); // UnusedAssetsData¿¡ ´ã±ä AssetµéÀ» Á¦°Å. Á¦°ÅÇÑ Asset ¼ö¸¦ NumOfAssetsDeletedº¯¼ö¿¡ ±â·Ï
+	const int32 NumOfAssetsDeleted = ObjectTools::DeleteAssets(UnusedAssetsData); // UnusedAssetsDataì— ë‹´ê¸´ Assetë“¤ì„ ì œê±°. ì œê±°í•œ Asset ìˆ˜ë¥¼ NumOfAssetsDeletedë³€ìˆ˜ì— ê¸°ë¡
 
-	if (NumOfAssetsDeleted == 0) return; // Á¦°Å°¡ µÈ AssetÀÌ ¾ø´Â °æ¿ì ¸®ÅÏ
+	if (NumOfAssetsDeleted == 0) return; // ì œê±°ê°€ ëœ Assetì´ ì—†ëŠ” ê²½ìš° ë¦¬í„´
 
-	DebugHeader::ShowNotifyInfo(TEXT("Successfully deleted " + FString::FromInt(NumOfAssetsDeleted) + TEXT(" unused assets"))); // ¾ğ¸®¾ó ¿¡µğÅÍ ¿ìÃøÇÏ´Ü¿¡ ¹®±¸ ¶ç¿ì±â
+	DebugHeader::ShowNotifyInfo(TEXT("Successfully deleted " + FString::FromInt(NumOfAssetsDeleted) + TEXT(" unused assets"))); // ì–¸ë¦¬ì–¼ ì—ë””í„° ìš°ì¸¡í•˜ë‹¨ì— ë¬¸êµ¬ ë„ìš°ê¸°
 }
 
 void UQuickAssetAction::FixUpRedirectors()
@@ -128,19 +128,19 @@ void UQuickAssetAction::FixUpRedirectors()
 	FAssetRegistryModule& AssetRegistryModule = FModuleManager::Get().LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry")); 
 
 	FARFilter Filter;
-	Filter.bRecursivePaths = true; // subfolder¿¡ Á¢±ÙÀÌ °¡´ÉÇÏµµ·Ï true ¼³Á¤
-	Filter.PackagePaths.Emplace("/Game"); // ¾î¶² Æú´õ¿¡ Á¢±ÙÇÒ Áö °æ·Î ¼³Á¤
-	Filter.ClassNames.Emplace("ObjectRedirector"); // ÇÊÅÍ ÇÏ±â¸¦ Èñ¸ÁÇÏ´Â Å¬·¡½ºÀÇ ÀÌ¸§
+	Filter.bRecursivePaths = true; // subfolderì— ì ‘ê·¼ì´ ê°€ëŠ¥í•˜ë„ë¡ true ì„¤ì •
+	Filter.PackagePaths.Emplace("/Game"); // ì–´ë–¤ í´ë”ì— ì ‘ê·¼í•  ì§€ ê²½ë¡œ ì„¤ì •
+	Filter.ClassNames.Emplace("ObjectRedirector"); // í•„í„° í•˜ê¸°ë¥¼ í¬ë§í•˜ëŠ” í´ë˜ìŠ¤ì˜ ì´ë¦„
 
-	TArray<FAssetData> OutRedirectors; // °á°ú¸¦ ÀúÀåÇÒ TArry º¯¼ö
+	TArray<FAssetData> OutRedirectors; // ê²°ê³¼ë¥¼ ì €ì¥í•  TArry ë³€ìˆ˜
 
-	AssetRegistryModule.Get().GetAssets(Filter, OutRedirectors); // FilterÇÑ °á°ú¸¦ OutRedirectors¿¡ ´ã´Â´Ù
+	AssetRegistryModule.Get().GetAssets(Filter, OutRedirectors); // Filterí•œ ê²°ê³¼ë¥¼ OutRedirectorsì— ë‹´ëŠ”ë‹¤
 
 	for (const FAssetData& RedirectorData : OutRedirectors)
 	{
-		if (UObjectRedirector* RedirectorToFix = Cast<UObjectRedirector>(RedirectorData.GetAsset())) // Redirect ÇÒ°Ô ÀÖ´Ù¸é
+		if (UObjectRedirector* RedirectorToFix = Cast<UObjectRedirector>(RedirectorData.GetAsset())) // Redirect í• ê²Œ ìˆë‹¤ë©´
 		{
-			RedirectorsToFixArray.Add(RedirectorToFix); // RedirectorsToFixArray¿¡ RedirectorToFix ´ãÀ½
+			RedirectorsToFixArray.Add(RedirectorToFix); // RedirectorsToFixArrayì— RedirectorToFix ë‹´ìŒ
 		}
 	}
 
