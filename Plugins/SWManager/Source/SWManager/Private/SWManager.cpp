@@ -81,6 +81,8 @@ void FSWManagerModule::OnDeleteUnsuedAssetButtonClicked()  // 에셋 삭제
 
 	if (ConfirmResult == EAppReturnType::No) return;
 
+	FixUpRedirectors();
+
 	TArray<FAssetData> UnusedAssetsDataArray; // 사용되지 않는 에셋들을 담는 TArray변수
 
 	for (const FString& AssetPathName : AssetsPathNames)
