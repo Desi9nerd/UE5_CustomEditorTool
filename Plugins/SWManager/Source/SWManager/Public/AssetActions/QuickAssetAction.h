@@ -51,7 +51,10 @@ private:
 		{UTexture::StaticClass(), TEXT("T_")},
 		{UTexture2D::StaticClass(), TEXT("T_")},
 		{UUserWidget::StaticClass(), TEXT("WBP_")},
+		{USkeletalMesh::StaticClass(),TEXT("SKM_")},
 		{USkeletalMeshComponent::StaticClass(), TEXT("SK_")},
+		{USkeleton::StaticClass(),TEXT("Skel_")},
+		{UPhysicsAsset::StaticClass(),TEXT("PHY_")},
 		{UNiagaraSystem::StaticClass(), TEXT("NS_")},
 		{UNiagaraEmitter::StaticClass(), TEXT("NE_")}
 	};
