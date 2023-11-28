@@ -62,7 +62,7 @@ void FSWManagerModule::AddCBMenuEntry(FMenuBuilder& MenuBuilder) // ContentBrows
 
 	MenuBuilder.AddMenuEntry
 	(
-		FText::FromString(TEXT("사용하지 않는 폴더 제거하기")), // Menu Entry의 이름
+		FText::FromString(TEXT("사용하지 않는 빈 폴더 제거하기")), // Menu Entry의 이름
 		FText::FromString(TEXT("빈 폴더를 안전하게 지우는 기능")), // Tooltip 설명
 		FSlateIcon(), // Custom Icon
 		FExecuteAction::CreateRaw(this, &FSWManagerModule::OnDeleteEmptyFoldersButtonClicked) // 실행될 함수
