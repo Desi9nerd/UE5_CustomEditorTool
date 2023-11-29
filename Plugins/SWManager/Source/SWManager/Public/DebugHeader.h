@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Misc/MessageDialog.h"
 #include "Widgets/Notifications/SNotificationList.h"
 #include "Framework/Notifications/NotificationManager.h"
@@ -22,13 +22,13 @@ namespace DebugHeader
 	{
 		if (bShowMsgAsWarning)
 		{
-			// Warning°ú Àß¸ø‰ç´Ù´Â ¹®±¸(Message)¸¦ ¶ç¿ì°í ¸®ÅÏÇÑ´Ù
+			// Warningê³¼ ì˜ëª»ë¬ë‹¤ëŠ” ë¬¸êµ¬(Message)ë¥¼ ë„ìš°ê³  ë¦¬í„´í•œë‹¤
 			FText MsgTitle = FText::FromString(TEXT("Warning"));
 
 			return FMessageDialog::Open(MsgType, FText::FromString(Message), &MsgTitle);
 		}
 		else
-		{	// ¹®±¸(Message)¸¦ ¶ç¿ì°í ¸®ÅÏÇÑ´Ù
+		{	// ë¬¸êµ¬(Message)ë¥¼ ë„ìš°ê³  ë¦¬í„´í•œë‹¤
 			return FMessageDialog::Open(MsgType, FText::FromString(Message));
 		}
 	}
@@ -37,7 +37,7 @@ namespace DebugHeader
 	{
 		FNotificationInfo NotifyInfo(FText::FromString(Message));
 		NotifyInfo.bUseLargeFont = true;
-		NotifyInfo.FadeOutDuration = 7.0f; // NotifyInfo ¸Ş½ÃÁö¸¦ 7ÃÊ µ¿¾È ¶ç¿î´Ù
+		NotifyInfo.FadeOutDuration = 7.0f; // NotifyInfo ë©”ì‹œì§€ë¥¼ 7ì´ˆ ë™ì•ˆ ë„ìš´ë‹¤
 
 		FSlateNotificationManager::Get().AddNotification(NotifyInfo);
 	}
