@@ -1,8 +1,11 @@
 ﻿#include "SlateWidgets/AdvanceDeletionWidget.h"
+#include "SlateBasics.h"
 
 void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 {
 	bCanSupportFocus = true;
+
+	StoredAssetsData = InArgs._AssetsDataToStore; // Slate Widget이 생성(Construct)될 때 변수에 InArgs._AssetsDataArray 넣음으로써 에셋 데이터를 Slate Widget 안에 담는다
 
 	FSlateFontInfo TitleTextFont = FCoreStyle::Get().GetFontStyle(FName("EmbossedText")); // 글꼴
 	TitleTextFont.Size = 30; // 글자 크기
@@ -11,7 +14,7 @@ void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 	[		
 		SNew(SVerticalBox) // Main vertical box
 
-		// First vertical slot for title text
+		// First Vertical slot - Title text
 		+ SVerticalBox::Slot()
 		.AutoHeight()
 		[
@@ -22,7 +25,27 @@ void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 			.ColorAndOpacity(FColor::White)
 		]
 
+		// 2번째 Slot - drop down to specify the listing condition and help text
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		[
+			SNew(SHorizontalBox)
+		]
 
+		// 3번째 slot - 에셋 리스트
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		[
+			SNew(SScrollBox) // 사용하려면 #include "SlateBasics.h" 필요
+
+		]
+
+		// 4번째 slot - 3 buttons
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		[
+			SNew(SHorizontalBox)
+		]
 	];
 
 }

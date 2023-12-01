@@ -239,12 +239,41 @@ TSharedRef<SDockTab> FSWManagerModule::OnSpawnAdvanceDeltionTab(const FSpawnTabA
 	SNew(SDockTab).TabRole(ETabRole::NomadTab)
 	[
 		SNew(SAdvanceDeletionTab)
-		.TestString(TEXT("데이터 넘기기"))
+		.AssetsDataToStore(GetAllAssetDataUnderSelectedFolder()) // 선택한 폴더에 포함된 모든 에셋 불러오기
 	];
 }
 
-#pragma endregion
+TArray<TSharedPtr<FAssetData>> FSWManagerModule::GetAllAssetDataUnderSelectedFolder()
+{
+	TArray< TSharedPtr <FAssetData> > AvaiableAssetsData; // 유효한 에셋들
 
+	TArray<FString> AssetsPathNames = UEditorAssetLibrary::ListAssets(FolderPathsSelected[0]); // 선택된 폴더(FolderPathsSelected[0]) 내에 있는 모든 에셋들을 AssetsPathNames변수에 담는다
+
+	for (const FString& AssetPathName : AssetsPathNames)
+	{
+		// Root folder들은 건드리지 않는다
+		if (AssetPathName.Contains(TEXT("Developers")) ||
+			AssetPathName.Contains(TEXT("Collections")) ||
+			AssetPathName.Contains(TEXT("__ExternalActors__")) ||
+			AssetPathName.Contains(TEXT("__ExternalObjects__")))
+		{
+			continue;
+		}
+
+		// 에셋이 없다면 continue
+		if (false == UEditorAssetLibrary::DoesAssetExist(AssetPathName)) continue;
+
+		// 에셋을 찾아 Data변수에 담는다
+		const FAssetData Data = UEditorAssetLibrary::FindAssetData(AssetPathName);
+
+		// MakeShared<FAssetData>(Data)를 AvaiableAssetsData에 추가
+		AvaiableAssetsData.Add(MakeShared<FAssetData>(Data));
+	}
+
+	return AvaiableAssetsData; // 유효한 에셋들 리턴
+}
+
+#pragma endregion
 
 
 void FSWManagerModule::ShutdownModule()
