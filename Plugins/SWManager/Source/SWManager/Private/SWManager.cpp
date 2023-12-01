@@ -67,6 +67,14 @@ void FSWManagerModule::AddCBMenuEntry(FMenuBuilder& MenuBuilder) // ContentBrows
 		FSlateIcon(), // Custom Icon
 		FExecuteAction::CreateRaw(this, &FSWManagerModule::OnDeleteEmptyFoldersButtonClicked) // 실행될 함수
 	);
+
+	MenuBuilder.AddMenuEntry
+	(
+		FText::FromString(TEXT("에셋 제거 매니저")), // Menu Entry의 이름
+		FText::FromString(TEXT("탭에 제거할 에셋 목록 띄우기")), // Tooltip 설명
+		FSlateIcon(), // Custom Icon
+		FExecuteAction::CreateRaw(this, &FSWManagerModule::OnAdvanceDeletionButtonClicked) // 실행될 함수
+	);
 }
 
 void FSWManagerModule::OnDeleteUnsuedAssetButtonClicked()  // 에셋 삭제
@@ -177,6 +185,11 @@ void FSWManagerModule::OnDeleteEmptyFoldersButtonClicked() // 사용하지 않�
 	{
 		DebugHeader::ShowNotifyInfo(TEXT("폴더 ") + FString::FromInt(Counter) + TEXT("개를 성공적으로 삭제했습니다."));
 	}
+}
+
+void FSWManagerModule::OnAdvanceDeletionButtonClicked()
+{
+	DebugHeader::Print(TEXT("Working"), FColor::Green);
 }
 
 void FSWManagerModule::FixUpRedirectors()
