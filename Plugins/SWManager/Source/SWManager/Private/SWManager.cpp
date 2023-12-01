@@ -72,7 +72,7 @@ void FSWManagerModule::AddCBMenuEntry(FMenuBuilder& MenuBuilder) // ContentBrows
 
 	MenuBuilder.AddMenuEntry
 	(
-		FText::FromString(TEXT("에셋 제거 매니저")), // Menu Entry의 이름
+		FText::FromString(TEXT("제거 마법사")), // Menu Entry의 이름
 		FText::FromString(TEXT("탭에 제거할 에셋 목록 띄우기")), // Tooltip 설명
 		FSlateIcon(), // Custom Icon
 		FExecuteAction::CreateRaw(this, &FSWManagerModule::OnAdvanceDeletionButtonClicked) // 실행될 함수

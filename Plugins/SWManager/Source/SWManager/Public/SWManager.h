@@ -23,7 +23,7 @@ private:
 	
 	void OnDeleteUnsuedAssetButtonClicked(); // 사용하지 않는 Asset 제거
 	void OnDeleteEmptyFoldersButtonClicked(); // 사용하지 않는 Folder 제거
-	void OnAdvanceDeletionButtonClicked(); // 제거 매니저
+	void OnAdvanceDeletionButtonClicked(); // 제거 마법사
 
 	void FixUpRedirectors(); // Fix Up Redirectors 
 
