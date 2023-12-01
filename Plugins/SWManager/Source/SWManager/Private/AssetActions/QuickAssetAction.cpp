@@ -110,7 +110,7 @@ void UQuickAssetAction::RemoveUnusedAssets() // 사용하지 않는 Asset 제거
 
 	if (UnusedAssetsData.Num() == 0) // 사용되지 않는 Asset이 없다면(=Asset들이 모두 레퍼런스되어 있다면)
 	{
-		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("No unused asset found among selected assets"), false);
+		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("선택된 에셋들 중 사용되지 않는 에셋을 발견하지 못했습니다."), false);
 		return; // 리턴 종료
 	}
 
