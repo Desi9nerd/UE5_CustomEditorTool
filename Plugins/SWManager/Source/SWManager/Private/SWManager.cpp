@@ -5,6 +5,7 @@
 #include "ObjectTools.h"
 #include "AssetRegistryModule.h"
 #include "AssetToolsModule.h"
+#include "SlateWidgets/AdvanceDeletionWidget.h"
 
 #define LOCTEXT_NAMESPACE "FSWManagerModule"
 
@@ -235,7 +236,11 @@ void FSWManagerModule::RegisterAdvanceDeletionTab()
 TSharedRef<SDockTab> FSWManagerModule::OnSpawnAdvanceDeltionTab(const FSpawnTabArgs& SpawnTabArgs)
 {
 	return
-		SNew(SDockTab).TabRole(ETabRole::NomadTab);
+	SNew(SDockTab).TabRole(ETabRole::NomadTab)
+	[
+		SNew(SAdvanceDeletionTab)
+		.TestString(TEXT("데이터 넘기기"))
+	];
 }
 
 #pragma endregion
