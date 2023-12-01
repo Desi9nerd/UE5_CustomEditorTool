@@ -37,7 +37,13 @@ void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 		.AutoHeight()
 		[
 			SNew(SScrollBox) // 사용하려면 #include "SlateBasics.h" 필요
-
+			+ SScrollBox::Slot()
+			[
+				SNew(SListView<TSharedPtr<FAssetData>>)
+				.ItemHeight(24.0f)
+				.ListItemsSource(&StoredAssetsData)
+				.OnGenerateRow(this, &SAdvanceDeletionTab::OnGenerateRowForList)
+			]
 		]
 
 		// 4번째 slot - 3 buttons
@@ -48,4 +54,19 @@ void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 		]
 	];
 
+}
+
+// 매개변수 AssetDataToDisplay로 TArray< TSharedPtr <FAssetData> > StoredAssetsData배열변수의 원소 하나하나 들어온다
+TSharedRef<ITableRow> SAdvanceDeletionTab::OnGenerateRowForList(TSharedPtr<FAssetData> AssetDataToDisplay, const TSharedRef<STableViewBase>& OwnerTable)
+{
+	const FString DisplayAssetName = AssetDataToDisplay->AssetName.ToString(); // 에셋의 이름을 FString 형태로 변수에 저장
+
+	TSharedRef< STableRow<TSharedPtr<FAssetData>> > ListViewRowWidget =
+		SNew(STableRow<TSharedPtr<FAssetData>>, OwnerTable)
+		[
+			SNew(STextBlock)
+			.Text(FText::FromString(DisplayAssetName)) // FString을 FText형태로 변환 
+		];
+
+	return ListViewRowWidget;
 }
