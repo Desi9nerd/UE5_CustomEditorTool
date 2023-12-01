@@ -13,6 +13,8 @@ void FSWManagerModule::StartupModule()
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 	// SWManager.uplugin에서 설정한 PreDefault 이후 실행됨
 	InitCBMenuExtention();
+
+	RegisterAdvanceDeletionTab(); // Tab 스폰 시키기
 }
 
 #pragma region ContentBrowserMenuExtention
@@ -189,7 +191,7 @@ void FSWManagerModule::OnDeleteEmptyFoldersButtonClicked() // 사용하지 않�
 
 void FSWManagerModule::OnAdvanceDeletionButtonClicked()
 {
-	DebugHeader::Print(TEXT("Working"), FColor::Green);
+	FGlobalTabmanager::Get()->TryInvokeTab(FName("AdvanceDeletion"));
 }
 
 void FSWManagerModule::FixUpRedirectors()
@@ -220,6 +222,25 @@ void FSWManagerModule::FixUpRedirectors()
 }
 
 #pragma endregion
+
+#pragma region CustomEditorTab
+
+void FSWManagerModule::RegisterAdvanceDeletionTab()
+{
+	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(FName("AdvanceDeletion"), // Tab ID: "AdvanceDeletion"
+		FOnSpawnTab::CreateRaw(this, &FSWManagerModule::OnSpawnAdvanceDeltionTab))
+		.SetDisplayName(FText::FromString(TEXT("제거 마법사")));
+}
+
+TSharedRef<SDockTab> FSWManagerModule::OnSpawnAdvanceDeltionTab(const FSpawnTabArgs&)
+{
+	return
+		SNew(SDockTab).TabRole(ETabRole::NomadTab);
+}
+
+#pragma endregion
+
+
 
 void FSWManagerModule::ShutdownModule()
 {

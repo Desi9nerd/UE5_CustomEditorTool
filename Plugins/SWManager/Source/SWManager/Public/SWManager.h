@@ -28,4 +28,13 @@ private:
 	void FixUpRedirectors(); // Fix Up Redirectors 
 
 #pragma endregion
+
+#pragma region CustomEditorTab
+
+	void RegisterAdvanceDeletionTab();
+
+	TSharedRef<SDockTab> OnSpawnAdvanceDeltionTab(const FSpawnTabArgs& SpawnTabArgs);
+
+#pragma endregion
+
 };
