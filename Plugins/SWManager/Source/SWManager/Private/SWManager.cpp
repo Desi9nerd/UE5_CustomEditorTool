@@ -232,7 +232,7 @@ void FSWManagerModule::RegisterAdvanceDeletionTab()
 		.SetDisplayName(FText::FromString(TEXT("제거 마법사")));
 }
 
-TSharedRef<SDockTab> FSWManagerModule::OnSpawnAdvanceDeltionTab(const FSpawnTabArgs&)
+TSharedRef<SDockTab> FSWManagerModule::OnSpawnAdvanceDeltionTab(const FSpawnTabArgs& SpawnTabArgs)
 {
 	return
 		SNew(SDockTab).TabRole(ETabRole::NomadTab);
