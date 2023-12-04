@@ -130,13 +130,13 @@ void SAdvanceDeletionTab::OnCheckBoxStateChanged(ECheckBoxState NewState, TShare
 	{
 	case ECheckBoxState::Unchecked:
 
-		DebugHeader::Print(AssetData->AssetName.ToString() + TEXT(" is unchecked"), FColor::Red);
+		DebugHeader::Print(AssetData->AssetName.ToString() + TEXT(" 이 unchecked 됨"), FColor::Red);
 
 		break;
 
 	case ECheckBoxState::Checked:
 
-		DebugHeader::Print(AssetData->AssetName.ToString() + TEXT(" is checked"), FColor::Green);
+		DebugHeader::Print(AssetData->AssetName.ToString() + TEXT(" 이 checked 됨"), FColor::Green);
 
 		break;
 
@@ -164,7 +164,7 @@ TSharedRef<SButton> SAdvanceDeletionTab::ConstructButtonForRowWidget(const TShar
 {
 	TSharedRef<SButton> ConstructedButton = 
 		SNew(SButton)
-		.Text(FText::FromString(TEXT("Delete")))
+		.Text(FText::FromString(TEXT("제거")))
 		.OnClicked(this, &SAdvanceDeletionTab::OnDeleteButtonClicked, AssetDataToDisplay); // AssetDataToDisplay 클릭 시 OnDeleteButtonClicked 함수 호출
 
 	return ConstructedButton;
