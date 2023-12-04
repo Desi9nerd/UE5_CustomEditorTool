@@ -62,7 +62,13 @@ TSharedRef<ITableRow> SAdvanceDeletionTab::OnGenerateRowForList(TSharedPtr<FAsse
 {
 	if (false == AssetDataToDisplay.IsValid()) return SNew(STableRow < TSharedPtr <FAssetData> >, OwnerTable); // TSharedRef는 nullptr이 불가능하므로 빈 STableRow를 위와 같은 방식으로 리턴 
 
+	const FString DisplayAssetClassName = AssetDataToDisplay->AssetClass.ToString(); // 에셋 클래스의 이름을 FString 형태로 변수에 저장
 	const FString DisplayAssetName = AssetDataToDisplay->AssetName.ToString(); // 에셋의 이름을 FString 형태로 변수에 저장
+
+	FSlateFontInfo AssetClassNameFont = GetEmboseedTextFont();
+	AssetClassNameFont.Size = 10;
+	FSlateFontInfo AssetNameFont = GetEmboseedTextFont();
+	AssetNameFont.Size = 10;
 
 	TSharedRef< STableRow<TSharedPtr<FAssetData>> > ListViewRowWidget =
 		SNew(STableRow<TSharedPtr<FAssetData>>, OwnerTable)
@@ -73,18 +79,24 @@ TSharedRef<ITableRow> SAdvanceDeletionTab::OnGenerateRowForList(TSharedPtr<FAsse
 			+ SHorizontalBox::Slot()
 			.HAlign(HAlign_Left)
 			.VAlign(VAlign_Center)
-			.FillWidth(.05f)
+			.FillWidth(0.05f)
 			[
 				ConstructCheckBox(AssetDataToDisplay) // 체크박스 생성
 			]
 
 			// 2번째 slot - 에셋 클래스 이름 띄우기
+			+ SHorizontalBox::Slot()
+			.HAlign(HAlign_Left)
+			.VAlign(VAlign_Fill)
+			.FillWidth(0.2f)
+			[
+				ConstructTextForRowWidget(DisplayAssetClassName, AssetClassNameFont) // 에셋 클래스 이름 띄우기
+			]
 
 			// 3번째 slot - 에셋 이름 띄우기
 			+SHorizontalBox::Slot()
 			[
-				SNew(STextBlock)
-				.Text(FText::FromString(DisplayAssetName)) // 에셋 이름
+				ConstructTextForRowWidget(DisplayAssetName, AssetNameFont) // 에셋 이름 띄우기
 			]
 
 			// 4번째 slot - 버튼
@@ -126,4 +138,16 @@ void SAdvanceDeletionTab::OnCheckBoxStateChanged(ECheckBoxState NewState, TShare
 	default:
 		break;
 	}
+}
+
+TSharedRef<STextBlock> SAdvanceDeletionTab::ConstructTextForRowWidget(const FString& TextContent, const FSlateFontInfo& FontToUse)
+{
+	// TextContent를 FontToUse글꼴로 흰색으로 글자 출력
+	TSharedRef<STextBlock> ConstructedTextBlock = 
+		SNew(STextBlock)
+		.Text(FText::FromString(TextContent))
+		.Font(FontToUse)
+		.ColorAndOpacity(FColor::White);
+
+	return ConstructedTextBlock;
 }
