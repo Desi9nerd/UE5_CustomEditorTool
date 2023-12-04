@@ -71,7 +71,7 @@ TSharedRef<ITableRow> SAdvanceDeletionTab::OnGenerateRowForList(TSharedPtr<FAsse
 	AssetNameFont.Size = 10;
 
 	TSharedRef< STableRow<TSharedPtr<FAssetData>> > ListViewRowWidget =
-		SNew(STableRow<TSharedPtr<FAssetData>>, OwnerTable)
+		SNew(STableRow<TSharedPtr<FAssetData>>, OwnerTable).Padding(FMargin(5.f))
 		[
 			SNew(SHorizontalBox)
 			
@@ -88,18 +88,26 @@ TSharedRef<ITableRow> SAdvanceDeletionTab::OnGenerateRowForList(TSharedPtr<FAsse
 			+ SHorizontalBox::Slot()
 			.HAlign(HAlign_Left)
 			.VAlign(VAlign_Fill)
-			.FillWidth(0.2f)
+			.FillWidth(0.5f)
 			[
 				ConstructTextForRowWidget(DisplayAssetClassName, AssetClassNameFont) // 에셋 클래스 이름 띄우기
 			]
 
 			// 3번째 slot - 에셋 이름 띄우기
 			+SHorizontalBox::Slot()
+			.HAlign(HAlign_Left)
+			.VAlign(VAlign_Fill)
 			[
 				ConstructTextForRowWidget(DisplayAssetName, AssetNameFont) // 에셋 이름 띄우기
 			]
 
 			// 4번째 slot - 버튼
+			+ SHorizontalBox::Slot()
+			.HAlign(HAlign_Right)
+			.VAlign(VAlign_Fill)
+			[
+				ConstructButtonForRowWidget(AssetDataToDisplay)
+			]
 		];
 
 	return ListViewRowWidget;
@@ -150,4 +158,21 @@ TSharedRef<STextBlock> SAdvanceDeletionTab::ConstructTextForRowWidget(const FStr
 		.ColorAndOpacity(FColor::White);
 
 	return ConstructedTextBlock;
+}
+
+TSharedRef<SButton> SAdvanceDeletionTab::ConstructButtonForRowWidget(const TSharedPtr<FAssetData>& AssetDataToDisplay) // 버튼 생성
+{
+	TSharedRef<SButton> ConstructedButton = 
+		SNew(SButton)
+		.Text(FText::FromString(TEXT("Delete")))
+		.OnClicked(this, &SAdvanceDeletionTab::OnDeleteButtonClicked, AssetDataToDisplay); // AssetDataToDisplay 클릭 시 OnDeleteButtonClicked 함수 호출
+
+	return ConstructedButton;
+}
+
+FReply SAdvanceDeletionTab::OnDeleteButtonClicked(TSharedPtr<FAssetData> ClickedAssetData) // 제거버튼 클릭
+{
+	DebugHeader::Print(ClickedAssetData->AssetName.ToString() + TEXT(" is clicked"), FColor::Green);
+	
+	return FReply::Handled();
 }

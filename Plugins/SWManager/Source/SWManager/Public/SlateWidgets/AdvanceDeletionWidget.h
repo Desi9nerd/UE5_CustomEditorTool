@@ -24,6 +24,8 @@ private:
 	void OnCheckBoxStateChanged(ECheckBoxState NewState, TSharedPtr<FAssetData> AssetData); // 체크박스 선택 시 변경 
 
 	TSharedRef<STextBlock> ConstructTextForRowWidget(const FString& TextContent, const FSlateFontInfo& FontToUse); // 한줄에 TextContent 띄우기
+	TSharedRef<SButton> ConstructButtonForRowWidget(const TSharedPtr<FAssetData>& AssetDataToDisplay); // 버튼 생성
+	FReply OnDeleteButtonClicked(TSharedPtr<FAssetData> ClickedAssetData); // 제거버튼 클릭
 
 	FSlateFontInfo GetEmboseedTextFont() const { return FCoreStyle::Get().GetFontStyle(FName("EmbossedText")); } // 글꼴 설정
 };
