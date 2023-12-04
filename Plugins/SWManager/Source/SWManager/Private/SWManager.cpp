@@ -275,6 +275,23 @@ TArray<TSharedPtr<FAssetData>> FSWManagerModule::GetAllAssetDataUnderSelectedFol
 
 #pragma endregion
 
+#pragma region ProccessDataForAdvanceDeletionTab
+
+bool FSWManagerModule::DeleteSingleAssetForAssetList(const FAssetData& AssetDataToDelete)
+{
+	TArray<FAssetData> AssetDataForDeletion;
+	AssetDataForDeletion.Add(AssetDataToDelete); // 제거할 에셋을 추가
+
+	// AssetDataForDeletion에 추가된 에셋들을 ObjectTools::DeleteAssets()으로 제거
+	if (ObjectTools::DeleteAssets(AssetDataForDeletion) > 0)
+	{
+		return true; // 제거한 에셋이 하나라도 있으면 true 리턴
+	}
+
+	return false;
+}
+
+#pragma endregion
 
 void FSWManagerModule::ShutdownModule()
 {
