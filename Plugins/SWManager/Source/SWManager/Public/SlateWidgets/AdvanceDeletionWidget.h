@@ -18,6 +18,11 @@ public:
 private:
 	TArray< TSharedPtr <FAssetData> > StoredAssetsData;
 
+	TSharedRef<SListView<TSharedPtr<FAssetData>>> ConstructAssetListView(); // 에셋 리스트 생성
+	TSharedPtr<SListView<TSharedPtr<FAssetData>>> ConstructedAssetListView;
+	void RefreshAssetListView(); // 에셋 리스트 새로고침
+
+
 	TSharedRef<ITableRow> OnGenerateRowForList(TSharedPtr<FAssetData> AssetDataToDisplay, const TSharedRef<STableViewBase>& OwnerTable);
 
 	TSharedRef<SCheckBox> ConstructCheckBox(const TSharedPtr<FAssetData>& AssetDataToDisplay); // 체크박스 생성

@@ -41,10 +41,7 @@ void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 			SNew(SScrollBox) // 사용하려면 #include "SlateBasics.h" 필요
 			+ SScrollBox::Slot()
 			[
-				SNew(SListView<TSharedPtr<FAssetData>>)
-				.ItemHeight(24.0f)
-				.ListItemsSource(&StoredAssetsData)
-				.OnGenerateRow(this, &SAdvanceDeletionTab::OnGenerateRowForList)
+				ConstructAssetListView()
 			]
 		]
 
@@ -56,6 +53,19 @@ void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 		]
 	];
 
+}
+
+TSharedRef<SListView<TSharedPtr<FAssetData>>> SAdvanceDeletionTab::ConstructAssetListView() // 에셋 리스트 생성
+{
+	// Construct 시 StoredAssetsData에 담은 정보를 사용해서 ConstructedAssetListView 설정
+	ConstructedAssetListView = 
+		SNew(SListView<TSharedPtr<FAssetData>>)
+		.ItemHeight(24.f)
+		.ListItemsSource(&StoredAssetsData)
+		.OnGenerateRow(this, &SAdvanceDeletionTab::OnGenerateRowForList);
+
+	// TSharedPtr형태인 ConstructedAssetListView를 .ToSharedRef()사용하여 TSharedRef형태로 변환해서 리턴 
+	return ConstructedAssetListView.ToSharedRef();
 }
 
 // 매개변수 AssetDataToDisplay로 TArray< TSharedPtr <FAssetData> > StoredAssetsData배열변수의 원소 하나하나 들어온다
@@ -179,9 +189,24 @@ FReply SAdvanceDeletionTab::OnDeleteButtonClicked(TSharedPtr<FAssetData> Clicked
 
 	if (bAssetDeleted)
 	{
-		// Refresh the list 
+		// List source items 업데이트
+		if (StoredAssetsData.Contains(ClickedAssetData))
+		{
+			StoredAssetsData.Remove(ClickedAssetData); // 클릭한 에셋을 StoredAssetsData배열에서 제거
+		}
+
+		// 에셋 리스트 새로고침
+		RefreshAssetListView();
 	}
 
 	
 	return FReply::Handled();
+}
+
+void SAdvanceDeletionTab::RefreshAssetListView() // 에셋 리스트 새로고침
+{
+	if (ConstructedAssetListView.IsValid())
+	{
+		ConstructedAssetListView->RebuildList();
+	}
 }
