@@ -35,5 +35,14 @@ private:
 
 #pragma endregion
 
+	TSharedRef<SButton> ConstructDeleteAllButton(); // 모두 제거 버튼 생성
+	TSharedRef<SButton> ConstructSelectAllButton(); // 모두 선택 버튼 생성
+	TSharedRef<SButton> ConstructDeselectAllButton(); // 모두 선택해제 버튼 생성
+
+	FReply OnDeleteAllButtonClicked(); // 모두 제거 버튼 클릭
+	FReply OnSelectAllButtonClicked(); // 모두 선택 버튼 클릭
+	FReply OnDeselectAllButtonClicked(); // 모두 선택해제 버튼 클릭
+
+	TSharedRef<STextBlock> ConstructTextForTabButtons(const FString& TextContent);
 	FSlateFontInfo GetEmboseedTextFont() const { return FCoreStyle::Get().GetFontStyle(FName("EmbossedText")); } // 글꼴 설정
 };

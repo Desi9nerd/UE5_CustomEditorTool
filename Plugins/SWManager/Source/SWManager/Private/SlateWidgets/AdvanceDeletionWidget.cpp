@@ -10,7 +10,7 @@ void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 	StoredAssetsData = InArgs._AssetsDataToStore; // Slate Widget이 생성(Construct)될 때 변수에 InArgs._AssetsDataArray 넣음으로써 에셋 데이터를 Slate Widget 안에 담는다
 
 	FSlateFontInfo TitleTextFont = FCoreStyle::Get().GetFontStyle(FName("EmbossedText")); // 글꼴
-	TitleTextFont.Size = 30; // 글자 크기
+	TitleTextFont.Size = 20; // 글자 크기
 
 	ChildSlot
 	[		
@@ -50,6 +50,29 @@ void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 		.AutoHeight()
 		[
 			SNew(SHorizontalBox)
+			// Button1 slot
+			+ SHorizontalBox::Slot()
+			.FillWidth(10.f)
+			.Padding(5.f)
+			[
+				ConstructDeleteAllButton() // 모두 제거 버튼 생성
+			]
+
+			// Button2 slot
+			+ SHorizontalBox::Slot()
+			.FillWidth(10.f)
+			.Padding(5.f)
+			[
+				ConstructSelectAllButton() // 모두 선택 버튼 생성
+			]
+
+			// Button3 slot
+			+ SHorizontalBox::Slot()
+			.FillWidth(10.f)
+			.Padding(5.f)
+			[
+				ConstructDeselectAllButton() // 모두 선택해제 버튼 생성
+			]
 		]
 	];
 
@@ -214,3 +237,69 @@ FReply SAdvanceDeletionTab::OnDeleteButtonClicked(TSharedPtr<FAssetData> Clicked
 }
 
 #pragma endregion
+
+TSharedRef<SButton> SAdvanceDeletionTab::ConstructDeleteAllButton() // 모두 제거 버튼 생성
+{
+	TSharedRef<SButton> DeleteAllButton = 
+		SNew(SButton)
+		.ContentPadding(FMargin(5.f))
+		.OnClicked(this, &SAdvanceDeletionTab::OnDeleteAllButtonClicked);
+
+	DeleteAllButton->SetContent(ConstructTextForTabButtons(TEXT("모두 제거")));
+
+	return DeleteAllButton;
+}
+
+FReply SAdvanceDeletionTab::OnDeleteAllButtonClicked() // 모두 제거 버튼 클릭
+{
+	DebugHeader::Print(TEXT("버튼이 눌린 모든 에셋을 제거"), FColor::Cyan);
+	return FReply::Handled();
+}
+
+TSharedRef<SButton> SAdvanceDeletionTab::ConstructSelectAllButton() // 모두 선택 버튼 생성
+{
+	TSharedRef<SButton> SelectAllButton = SNew(SButton)
+		.ContentPadding(FMargin(5.f))
+		.OnClicked(this, &SAdvanceDeletionTab::OnSelectAllButtonClicked);
+
+	SelectAllButton->SetContent(ConstructTextForTabButtons(TEXT("모두 선택")));
+
+	return SelectAllButton;
+}
+
+FReply SAdvanceDeletionTab::OnSelectAllButtonClicked() // 모두 선택 버튼 클릭
+{
+	DebugHeader::Print(TEXT("버튼이 눌린 에셋들 모두 선택"), FColor::Cyan);
+	return FReply::Handled();
+}
+
+TSharedRef<SButton> SAdvanceDeletionTab::ConstructDeselectAllButton() // 모두 선택해제 버튼 생성
+{
+	TSharedRef<SButton> DeselectAllButton = SNew(SButton)
+		.ContentPadding(FMargin(5.f))
+		.OnClicked(this, &SAdvanceDeletionTab::OnDeselectAllButtonClicked);
+
+	DeselectAllButton->SetContent(ConstructTextForTabButtons(TEXT("모두 선택해제")));
+
+	return DeselectAllButton;
+}
+
+FReply SAdvanceDeletionTab::OnDeselectAllButtonClicked() // 모두 선택해제 버튼 클릭
+{
+	DebugHeader::Print(TEXT("버튼이 눌린 에셋들 모두 선택해제"), FColor::Cyan);
+	return FReply::Handled();
+}
+
+TSharedRef<STextBlock> SAdvanceDeletionTab::ConstructTextForTabButtons(const FString& TextContent)
+{
+	FSlateFontInfo ButtonTextFont = GetEmboseedTextFont();
+	ButtonTextFont.Size = 10;
+
+	TSharedRef<STextBlock> ConstructedTextBlock = 
+		SNew(STextBlock)
+		.Text(FText::FromString(TextContent))
+		.Font(ButtonTextFont)
+		.Justification(ETextJustify::Center);
+
+	return ConstructedTextBlock;
+}
