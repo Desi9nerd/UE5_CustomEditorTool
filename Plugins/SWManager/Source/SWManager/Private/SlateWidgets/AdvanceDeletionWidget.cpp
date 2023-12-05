@@ -68,6 +68,16 @@ TSharedRef<SListView<TSharedPtr<FAssetData>>> SAdvanceDeletionTab::ConstructAsse
 	return ConstructedAssetListView.ToSharedRef();
 }
 
+void SAdvanceDeletionTab::RefreshAssetListView() // 에셋 리스트 새로고침
+{
+	if (ConstructedAssetListView.IsValid())
+	{
+		ConstructedAssetListView->RebuildList();
+	}
+}
+
+#pragma region RowWidgetForAssetListView
+
 // 매개변수 AssetDataToDisplay로 TArray< TSharedPtr <FAssetData> > StoredAssetsData배열변수의 원소 하나하나 들어온다
 TSharedRef<ITableRow> SAdvanceDeletionTab::OnGenerateRowForList(TSharedPtr<FAssetData> AssetDataToDisplay, const TSharedRef<STableViewBase>& OwnerTable)
 {
@@ -203,10 +213,4 @@ FReply SAdvanceDeletionTab::OnDeleteButtonClicked(TSharedPtr<FAssetData> Clicked
 	return FReply::Handled();
 }
 
-void SAdvanceDeletionTab::RefreshAssetListView() // 에셋 리스트 새로고침
-{
-	if (ConstructedAssetListView.IsValid())
-	{
-		ConstructedAssetListView->RebuildList();
-	}
-}
+#pragma endregion
