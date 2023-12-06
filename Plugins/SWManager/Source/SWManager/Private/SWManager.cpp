@@ -242,6 +242,7 @@ TSharedRef<SDockTab> FSWManagerModule::OnSpawnAdvanceDeltionTab(const FSpawnTabA
 	[
 		SNew(SAdvanceDeletionTab)
 		.AssetsDataToStore(GetAllAssetDataUnderSelectedFolder()) // 선택한 폴더에 포함된 모든 에셋 불러오기
+		.CurrentSelectedFolder(FolderPathsSelected[0]) // 현재 폴더
 	];
 }
 

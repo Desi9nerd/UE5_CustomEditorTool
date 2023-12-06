@@ -52,6 +52,21 @@ void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 			[
 				ConstructComboBox()
 			]
+
+			// ComboBox slot 도움말
+			+ SHorizontalBox::Slot()
+			.FillWidth(0.6f)
+			[
+				ConstructComboHelpTexts(TEXT("좌측 상단 Drop down에서 리스트 옵션을 지정할 수 있습니다. 왼쪽 마우스를 클릭하면 Asset이 있는 곳으로 이동합니다."),
+					ETextJustify::Center)
+			]
+
+			// Folder path 도움말
+			+ SHorizontalBox::Slot()
+			.FillWidth(0.1f)
+			[
+				ConstructComboHelpTexts(TEXT("현재 폴더:\n") + InArgs._CurrentSelectedFolder, ETextJustify::Right)
+			]
 		]
 
 		// 3번째 slot - 에셋 리스트
@@ -185,6 +200,17 @@ void SAdvanceDeletionTab::OnComboSelectionChanged(TSharedPtr<FString> SelectedOp
 #pragma endregion
 
 #pragma region RowWidgetForAssetListView
+
+TSharedRef<STextBlock> SAdvanceDeletionTab::ConstructComboHelpTexts(const FString& TextContent, ETextJustify::Type TextJustify)
+{
+	TSharedRef<STextBlock> ConstructedHelpText =
+		SNew(STextBlock)
+		.Text(FText::FromString(TextContent))
+		.Justification(TextJustify)
+		.AutoWrapText(true);
+
+	return ConstructedHelpText;
+}
 
 // 매개변수 AssetDataToDisplay로 TArray< TSharedPtr <FAssetData> > StoredAssetsData배열변수의 원소 하나하나 들어온다
 TSharedRef<ITableRow> SAdvanceDeletionTab::OnGenerateRowForList(TSharedPtr<FAssetData> AssetDataToDisplay, const TSharedRef<STableViewBase>& OwnerTable)

@@ -9,6 +9,7 @@ class SAdvanceDeletionTab : public SCompoundWidget
 	SLATE_BEGIN_ARGS(SAdvanceDeletionTab) {}
 
 	SLATE_ARGUMENT(TArray< TSharedPtr <FAssetData> >, AssetsDataToStore)
+	SLATE_ARGUMENT(FString, CurrentSelectedFolder)
 
 	SLATE_END_ARGS()
 
@@ -37,6 +38,8 @@ private:
 	void OnComboSelectionChanged(TSharedPtr<FString> SelectedOption, ESelectInfo::Type InSelectInfo); // ComboBox 선택 시 변경
 
 	TSharedPtr<STextBlock> ComboDisplayTextBlock;
+
+	TSharedRef<STextBlock> ConstructComboHelpTexts(const FString& TextContent, ETextJustify::Type TextJustify); // 도움말 생성
 
 #pragma endregion
 
