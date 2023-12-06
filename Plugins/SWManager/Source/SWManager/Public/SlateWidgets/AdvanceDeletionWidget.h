@@ -17,6 +17,8 @@ public:
 
 private:
 	TArray< TSharedPtr <FAssetData> > StoredAssetsData;
+	TArray<TSharedRef<SCheckBox>> CheckBoxesArray; // 체크박스들을 담는 배열
+	TArray<TSharedPtr<FAssetData>> AssetsDataToDeleteArray; // 체크박스 클릭 시 선택된 에셋들을 기록하는 TArray변수
 
 	TSharedRef<SListView<TSharedPtr<FAssetData>>> ConstructAssetListView(); // 에셋 리스트 생성
 	TSharedPtr<SListView<TSharedPtr<FAssetData>>> ConstructedAssetListView;
@@ -48,8 +50,6 @@ private:
 	TSharedRef<STextBlock> ConstructTextForTabButtons(const FString& TextContent);
 
 #pragma endregion
-
-	TArray<TSharedPtr<FAssetData>> AssetsDataToDeleteArray; // 체크박스 클릭 시 선택된 에셋들을 기록하는 TArray변수
-
+	
 	FSlateFontInfo GetEmboseedTextFont() const { return FCoreStyle::Get().GetFontStyle(FName("EmbossedText")); } // 글꼴 설정
 };

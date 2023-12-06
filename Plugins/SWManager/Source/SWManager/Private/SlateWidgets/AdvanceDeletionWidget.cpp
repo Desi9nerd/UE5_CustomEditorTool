@@ -9,6 +9,9 @@ void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 
 	StoredAssetsData = InArgs._AssetsDataToStore; // Slate Widget이 생성(Construct)될 때 변수에 InArgs._AssetsDataArray 넣음으로써 에셋 데이터를 Slate Widget 안에 담는다
 
+	CheckBoxesArray.Empty();
+	AssetsDataToDeleteArray.Empty();
+
 	FSlateFontInfo TitleTextFont = FCoreStyle::Get().GetFontStyle(FName("EmbossedText")); // 글꼴
 	TitleTextFont.Size = 20; // 글자 크기
 
@@ -93,6 +96,7 @@ TSharedRef<SListView<TSharedPtr<FAssetData>>> SAdvanceDeletionTab::ConstructAsse
 
 void SAdvanceDeletionTab::RefreshAssetListView() // 에셋 리스트 새로고침
 {
+	CheckBoxesArray.Empty();
 	AssetsDataToDeleteArray.Empty();
 
 	if (ConstructedAssetListView.IsValid())
@@ -166,6 +170,8 @@ TSharedRef<SCheckBox> SAdvanceDeletionTab::ConstructCheckBox(const TSharedPtr<FA
 		.Type(ESlateCheckBoxType::CheckBox)
 		.OnCheckStateChanged(this, &SAdvanceDeletionTab::OnCheckBoxStateChanged, AssetDataToDisplay)
 		.Visibility(EVisibility::Visible);
+
+	CheckBoxesArray.Add(ConstructedCheckBox); // 체크박스들을 담는 배열에 생성한 체크박스 추가
 
 	return ConstructedCheckBox;
 }
@@ -248,7 +254,7 @@ TSharedRef<SButton> SAdvanceDeletionTab::ConstructDeleteAllButton() // 모두 �
 		.ContentPadding(FMargin(5.f))
 		.OnClicked(this, &SAdvanceDeletionTab::OnDeleteAllButtonClicked);
 
-	DeleteAllButton->SetContent(ConstructTextForTabButtons(TEXT("모두 제거")));
+	DeleteAllButton->SetContent(ConstructTextForTabButtons(TEXT("선택한 에셋 모두 제거")));
 
 	return DeleteAllButton;
 }
@@ -303,7 +309,16 @@ TSharedRef<SButton> SAdvanceDeletionTab::ConstructSelectAllButton() // 모두 �
 
 FReply SAdvanceDeletionTab::OnSelectAllButtonClicked() // 모두 선택 버튼 클릭
 {
-	DebugHeader::Print(TEXT("버튼이 눌린 에셋들 모두 선택"), FColor::Cyan);
+	if (CheckBoxesArray.Num() == 0) return FReply::Handled(); // 체크박스가 없으면 리턴
+
+	for (const TSharedRef<SCheckBox>& CheckBox : CheckBoxesArray)
+	{
+		if (false == CheckBox->IsChecked())
+		{
+			CheckBox->ToggleCheckedState();
+		}
+	}
+
 	return FReply::Handled();
 }
 
@@ -320,7 +335,16 @@ TSharedRef<SButton> SAdvanceDeletionTab::ConstructDeselectAllButton() // 모두 
 
 FReply SAdvanceDeletionTab::OnDeselectAllButtonClicked() // 모두 선택해제 버튼 클릭
 {
-	DebugHeader::Print(TEXT("버튼이 눌린 에셋들 모두 선택해제"), FColor::Cyan);
+	if (CheckBoxesArray.Num() == 0) return FReply::Handled(); // 체크박스가 없으면 리턴
+
+	for (const TSharedRef<SCheckBox>& CheckBox : CheckBoxesArray)
+	{
+		if (CheckBox->IsChecked())
+		{
+			CheckBox->ToggleCheckedState();
+		}
+	}
+
 	return FReply::Handled();
 }
 
