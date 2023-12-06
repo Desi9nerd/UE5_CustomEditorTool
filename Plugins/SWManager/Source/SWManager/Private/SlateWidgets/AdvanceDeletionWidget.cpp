@@ -350,6 +350,10 @@ FReply SAdvanceDeletionTab::OnDeleteAllButtonClicked() // 모두 제거 버튼 �
 			{
 				StoredAssetsData.Remove(DeletedData); // 제거된 에셋들을 StoredAssetsData에서 빼줌
 			}
+			if (DisplayedAssetsData.Contains(DeletedData))
+			{
+				DisplayedAssetsData.Remove(DeletedData); // 제거된 에셋들을 DisplayedAssetsData에서 빼줌
+			}
 		}
 
 		RefreshAssetListView(); // 에셋 리스트 새로고침

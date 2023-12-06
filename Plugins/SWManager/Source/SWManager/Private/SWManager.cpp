@@ -192,6 +192,8 @@ void FSWManagerModule::OnDeleteEmptyFoldersButtonClicked() // 사용하지 않�
 
 void FSWManagerModule::OnAdvanceDeletionButtonClicked() // 제거 마법사
 {
+	FixUpRedirectors();
+
 	FGlobalTabmanager::Get()->TryInvokeTab(FName("AdvanceDeletion")); // Menu Entry에 "AdvanceDeletion"란 Tab ID를 가진 탭 부르기. "AdvanceDeletion"가 오타나면 실행되지 않는다.
 }
 
