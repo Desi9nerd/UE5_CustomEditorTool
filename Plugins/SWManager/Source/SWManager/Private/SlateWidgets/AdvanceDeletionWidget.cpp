@@ -3,18 +3,21 @@
 #include "DebugHeader.h"
 #include "SWManager.h"
 
-#define ListAll TEXT("모든 에셋")
+#define ListAll TEXT("모든 에셋 리스트")
+#define ListUnused TEXT("사용하지 않는 모든 에셋 리스트")
 
 void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 {
 	bCanSupportFocus = true;
 
 	StoredAssetsData = InArgs._AssetsDataToStore; // Slate Widget이 생성(Construct)될 때 변수에 InArgs._AssetsDataArray 넣음으로써 에셋 데이터를 Slate Widget 안에 담는다
+	DisplayedAssetsData = StoredAssetsData; // Slate Widget 생성 시에는 StoredAssetData와 같다
 
 	CheckBoxesArray.Empty();
 	AssetsDataToDeleteArray.Empty();
 
 	ComboBoxSourceItems.Add(MakeShared<FString>(ListAll)); // ComboBox에 ListAll 추가
+	ComboBoxSourceItems.Add(MakeShared<FString>(ListUnused)); // ComboBox에 ListUnused 추가
 
 	FSlateFontInfo TitleTextFont = FCoreStyle::Get().GetFontStyle(FName("EmbossedText")); // 글꼴
 	TitleTextFont.Size = 20; // 글자 크기
@@ -40,6 +43,12 @@ void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 		[
 			SNew(SHorizontalBox)
 
+			// ComboBox slot
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			[
+				ConstructComboBox()
+			]
 		]
 
 		// 3번째 slot - 에셋 리스트
@@ -88,11 +97,11 @@ void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 
 TSharedRef<SListView<TSharedPtr<FAssetData>>> SAdvanceDeletionTab::ConstructAssetListView() // 에셋 리스트 생성
 {
-	// Construct 시 StoredAssetsData에 담은 정보를 사용해서 ConstructedAssetListView 설정
+	// Construct 시 DisplayedAssetsData에 담은 정보를 사용해서 ConstructedAssetListView 설정
 	ConstructedAssetListView = 
 		SNew(SListView<TSharedPtr<FAssetData>>)
 		.ItemHeight(24.f)
-		.ListItemsSource(&StoredAssetsData)
+		.ListItemsSource(&DisplayedAssetsData)
 		.OnGenerateRow(this, &SAdvanceDeletionTab::OnGenerateRowForList);
 
 	// TSharedPtr형태인 ConstructedAssetListView를 .ToSharedRef()사용하여 TSharedRef형태로 변환해서 리턴 
@@ -141,6 +150,19 @@ void SAdvanceDeletionTab::OnComboSelectionChanged(TSharedPtr<FString> SelectedOp
 	DebugHeader::Print(*SelectedOption.Get(), FColor::Cyan);
 
 	ComboDisplayTextBlock->SetText(FText::FromString(*SelectedOption.Get())); // 매개변수로 들어온 SelectedOption 문구를 띄운다
+
+	FSWManagerModule& SWManagerModule = FModuleManager::LoadModuleChecked<FSWManagerModule>(TEXT("SWManager"));
+
+	// 선택된 옵션(ListAll or ListUnused)에 따라 필터링된 에셋 데이터를 SWManagerModule에 넘긴다
+	if (*SelectedOption.Get() == ListAll) // 모든 에셋 리스트
+	{
+		//List all stored asset data
+	}
+	else if (*SelectedOption.Get() == ListUnused) // 사용하지 않는 모든 에셋 리스트
+	{
+		SWManagerModule.ListUnusedAssetsForAssetList(StoredAssetsData, DisplayedAssetsData); // StoredAssetData의 에셋들 중 참조된 경우를 검사하여 사용하지 않는 에셋들을 DisplayedAssetsData에 업데이트한다.
+		RefreshAssetListView();
+	}
 }
 
 #pragma endregion

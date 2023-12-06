@@ -17,6 +17,7 @@ public:
 
 private:
 	TArray< TSharedPtr <FAssetData> > StoredAssetsData;
+	TArray<TSharedPtr<FAssetData>> DisplayedAssetsData; // SListView의 source item
 	TArray<TSharedRef<SCheckBox>> CheckBoxesArray; // 체크박스들을 담는 배열
 	TArray<TSharedPtr<FAssetData>> AssetsDataToDeleteArray; // 체크박스 클릭 시 선택된 에셋들을 기록하는 TArray변수
 

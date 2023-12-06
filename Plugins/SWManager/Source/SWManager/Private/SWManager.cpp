@@ -277,12 +277,12 @@ TArray<TSharedPtr<FAssetData>> FSWManagerModule::GetAllAssetDataUnderSelectedFol
 
 #pragma region ProccessDataForAdvanceDeletionTab
 
-bool FSWManagerModule::DeleteSingleAssetForAssetList(const FAssetData& AssetDataToDelete)
+bool FSWManagerModule::DeleteSingleAssetForAssetList(const FAssetData& AssetDataToDelete) // 에셋 1개 제거
 {
 	TArray<FAssetData> AssetDataForDeletion;
 	AssetDataForDeletion.Add(AssetDataToDelete); // 제거할 에셋을 추가
 
-	// AssetDataForDeletion에 추가된 에셋들을 ObjectTools::DeleteAssets()으로 제거
+	// AssetDataForDeletion에 추가된 에셋을 ObjectTools::DeleteAssets()으로 제거
 	if (ObjectTools::DeleteAssets(AssetDataForDeletion) > 0)
 	{
 		return true; // 제거한 에셋이 하나라도 있으면 true 리턴
@@ -291,7 +291,7 @@ bool FSWManagerModule::DeleteSingleAssetForAssetList(const FAssetData& AssetData
 	return false;
 }
 
-bool FSWManagerModule::DeleteMultipleAssetsForAssetList(const TArray<FAssetData>& AssetsToDelete)
+bool FSWManagerModule::DeleteMultipleAssetsForAssetList(const TArray<FAssetData>& AssetsToDelete) // 에셋들 한번에 제거
 {
 	// AssetsToDelete에 추가된 에셋들을 ObjectTools::DeleteAssets()으로 제거
 	if (ObjectTools::DeleteAssets(AssetsToDelete) > 0)
@@ -302,18 +302,17 @@ bool FSWManagerModule::DeleteMultipleAssetsForAssetList(const TArray<FAssetData>
 	return false;
 }
 
-void FSWManagerModule::ListUnusedAssetsForAssetList(const TArray<TSharedPtr<FAssetData>>& AssetsDataToFilter, TArray<TSharedPtr<FAssetData>>& OutUnusedAssetsData)
+void FSWManagerModule::ListUnusedAssetsForAssetList(const TArray<TSharedPtr<FAssetData>>& AssetsDataToFilter, TArray<TSharedPtr<FAssetData>>& OutUnusedAssetsData) // 사용하지 않는 에셋 리스트 업데이트
 {
-	OutUnusedAssetsData.Empty();
+	OutUnusedAssetsData.Empty(); // OutUnusedAssetsData변수 초기화
 
 	for (const TSharedPtr<FAssetData>& DataSharedPtr : AssetsDataToFilter)
 	{
-		TArray<FString> AssetReferencers =
-			UEditorAssetLibrary::FindPackageReferencersForAsset(DataSharedPtr->ObjectPath.ToString());
+		TArray<FString> AssetReferencers = UEditorAssetLibrary::FindPackageReferencersForAsset(DataSharedPtr->ObjectPath.ToString()); // DataSharedPtr 에셋이 참조되었는지 검사
 
-		if (AssetReferencers.Num() == 0)
+		if (AssetReferencers.Num() == 0) // 에셋이 참조된 수가 0이라면(=사용하지 않는 에셋이라면)
 		{
-			OutUnusedAssetsData.Add(DataSharedPtr);
+			OutUnusedAssetsData.Add(DataSharedPtr); // 해당 에셋 데이터를 OutUnusedAssetsData에 추가
 		}
 	}
 }
