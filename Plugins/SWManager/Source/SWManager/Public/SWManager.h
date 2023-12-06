@@ -43,6 +43,7 @@ public:
 #pragma region ProccessDataForAdvanceDeletionTab
 
 	bool DeleteSingleAssetForAssetList(const FAssetData& AssetDataToDelete);
+	bool DeleteMultipleAssetsForAssetList(const TArray<FAssetData>& AssetsToDelete); // 매개변수로 받은 에셋TArray배열을 한번에 지우고 true리턴. 아니면 false리턴.
 
 #pragma endregion
 

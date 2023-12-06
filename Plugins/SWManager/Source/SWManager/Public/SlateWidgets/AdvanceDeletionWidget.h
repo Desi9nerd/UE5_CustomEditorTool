@@ -35,6 +35,8 @@ private:
 
 #pragma endregion
 
+#pragma region TabButtons
+
 	TSharedRef<SButton> ConstructDeleteAllButton(); // 모두 제거 버튼 생성
 	TSharedRef<SButton> ConstructSelectAllButton(); // 모두 선택 버튼 생성
 	TSharedRef<SButton> ConstructDeselectAllButton(); // 모두 선택해제 버튼 생성
@@ -44,5 +46,10 @@ private:
 	FReply OnDeselectAllButtonClicked(); // 모두 선택해제 버튼 클릭
 
 	TSharedRef<STextBlock> ConstructTextForTabButtons(const FString& TextContent);
+
+#pragma endregion
+
+	TArray<TSharedPtr<FAssetData>> AssetsDataToDeleteArray; // 체크박스 클릭 시 선택된 에셋들을 기록하는 TArray변수
+
 	FSlateFontInfo GetEmboseedTextFont() const { return FCoreStyle::Get().GetFontStyle(FName("EmbossedText")); } // 글꼴 설정
 };

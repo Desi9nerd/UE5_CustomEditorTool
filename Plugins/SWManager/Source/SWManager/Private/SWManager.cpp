@@ -291,6 +291,17 @@ bool FSWManagerModule::DeleteSingleAssetForAssetList(const FAssetData& AssetData
 	return false;
 }
 
+bool FSWManagerModule::DeleteMultipleAssetsForAssetList(const TArray<FAssetData>& AssetsToDelete)
+{
+	// AssetsToDelete에 추가된 에셋들을 ObjectTools::DeleteAssets()으로 제거
+	if (ObjectTools::DeleteAssets(AssetsToDelete) > 0)
+	{
+		return true;
+	}
+
+	return false;
+}
+
 #pragma endregion
 
 void FSWManagerModule::ShutdownModule()

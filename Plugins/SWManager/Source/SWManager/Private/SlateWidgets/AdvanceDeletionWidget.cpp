@@ -93,6 +93,8 @@ TSharedRef<SListView<TSharedPtr<FAssetData>>> SAdvanceDeletionTab::ConstructAsse
 
 void SAdvanceDeletionTab::RefreshAssetListView() // 에셋 리스트 새로고침
 {
+	AssetsDataToDeleteArray.Empty();
+
 	if (ConstructedAssetListView.IsValid())
 	{
 		ConstructedAssetListView->RebuildList();
@@ -173,15 +175,14 @@ void SAdvanceDeletionTab::OnCheckBoxStateChanged(ECheckBoxState NewState, TShare
 	switch (NewState)
 	{
 	case ECheckBoxState::Unchecked:
-
-		DebugHeader::Print(AssetData->AssetName.ToString() + TEXT(" 이 unchecked 됨"), FColor::Red);
-
+		if (AssetsDataToDeleteArray.Contains(AssetData))
+		{
+			AssetsDataToDeleteArray.Remove(AssetData); // 선택된 에셋 목록에서 빼줌
+		}
 		break;
 
 	case ECheckBoxState::Checked:
-
-		DebugHeader::Print(AssetData->AssetName.ToString() + TEXT(" 이 checked 됨"), FColor::Green);
-
+		AssetsDataToDeleteArray.AddUnique(AssetData);  // 선택된 에셋 목록에서 추가
 		break;
 
 	case ECheckBoxState::Undetermined:
@@ -238,6 +239,8 @@ FReply SAdvanceDeletionTab::OnDeleteButtonClicked(TSharedPtr<FAssetData> Clicked
 
 #pragma endregion
 
+#pragma region TabButtons
+
 TSharedRef<SButton> SAdvanceDeletionTab::ConstructDeleteAllButton() // 모두 제거 버튼 생성
 {
 	TSharedRef<SButton> DeleteAllButton = 
@@ -252,7 +255,38 @@ TSharedRef<SButton> SAdvanceDeletionTab::ConstructDeleteAllButton() // 모두 �
 
 FReply SAdvanceDeletionTab::OnDeleteAllButtonClicked() // 모두 제거 버튼 클릭
 {
-	DebugHeader::Print(TEXT("버튼이 눌린 모든 에셋을 제거"), FColor::Cyan);
+	if (AssetsDataToDeleteArray.Num() == 0) // 선택한 에셋이 없는 경우
+	{
+		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("현재 선택된 에셋이 없습니다."));
+		return FReply::Handled();
+	}
+
+	TArray<FAssetData> AssetDataToDelete; // 제거할 에셋 목록 TArray배열
+
+	for (const TSharedPtr<FAssetData>& Data : AssetsDataToDeleteArray) // 선택한 에셋들
+	{
+		AssetDataToDelete.Add(*Data.Get()); // 선택한 에셋들을 제거할 에셋 목록에 담는다
+	}
+
+	FSWManagerModule& SWManagerModule =
+		FModuleManager::LoadModuleChecked<FSWManagerModule>(TEXT("SWManager"));
+
+	const bool bAssetsDeleted = SWManagerModule.DeleteMultipleAssetsForAssetList(AssetDataToDelete); // SWManger클래스의 DeleteMultipleAssetsForAssetList함수를 사용하여 AssetDataToDelete에 담긴 에셋들을 한번에 제거
+
+	if (bAssetsDeleted) // 에셋들이 제거 되었다면
+	{
+		for (const TSharedPtr<FAssetData>& DeletedData : AssetsDataToDeleteArray)
+		{
+			if (StoredAssetsData.Contains(DeletedData))
+			{
+				StoredAssetsData.Remove(DeletedData); // 제거된 에셋들을 StoredAssetsData에서 빼줌
+			}
+		}
+
+		RefreshAssetListView(); // 에셋 리스트 새로고침
+	}
+
+	// 제거를 위해 Module에 데이터를 넘긴다
 	return FReply::Handled();
 }
 
@@ -303,3 +337,5 @@ TSharedRef<STextBlock> SAdvanceDeletionTab::ConstructTextForTabButtons(const FSt
 
 	return ConstructedTextBlock;
 }
+
+#pragma endregion
