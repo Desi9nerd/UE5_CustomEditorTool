@@ -156,7 +156,8 @@ void SAdvanceDeletionTab::OnComboSelectionChanged(TSharedPtr<FString> SelectedOp
 	// 선택된 옵션(ListAll or ListUnused)에 따라 필터링된 에셋 데이터를 SWManagerModule에 넘긴다
 	if (*SelectedOption.Get() == ListAll) // 모든 에셋 리스트
 	{
-		//List all stored asset data
+		DisplayedAssetsData = StoredAssetsData; // 모든 StoredAssetsData을 DisplayedAssetsData에 담아 위젯에 띄운다
+		RefreshAssetListView();
 	}
 	else if (*SelectedOption.Get() == ListUnused) // 사용하지 않는 모든 에셋 리스트
 	{
