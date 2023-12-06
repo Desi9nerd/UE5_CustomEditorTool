@@ -3,8 +3,8 @@
 #include "DebugHeader.h"
 #include "SWManager.h"
 
-#define ListAll TEXT("모든 에셋 리스트")
-#define ListUnused TEXT("사용하지 않는 모든 에셋 리스트")
+#define ListAll TEXT("모든 에셋")
+#define ListUnused TEXT("사용하지 않는 에셋")
 
 void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 {
@@ -130,7 +130,7 @@ TSharedRef<SComboBox<TSharedPtr<FString>>> SAdvanceDeletionTab::ConstructComboBo
 		.OnSelectionChanged(this, &SAdvanceDeletionTab::OnComboSelectionChanged) // 선택 시 함수 실행
 		[
 			SAssignNew(ComboDisplayTextBlock, STextBlock)
-			.Text(FText::FromString(TEXT("에셋 옵션 리스트")))
+			.Text(FText::FromString(TEXT("에셋 리스트 보여주기 옵션")))
 		];
 
 	return ConstructedComboBox;
