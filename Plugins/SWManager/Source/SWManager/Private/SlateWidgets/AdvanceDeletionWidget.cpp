@@ -16,12 +16,13 @@ void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 
 	CheckBoxesArray.Empty();
 	AssetsDataToDeleteArray.Empty();
+	ComboBoxSourceItems.Empty();
 
 	ComboBoxSourceItems.Add(MakeShared<FString>(ListAll)); // ComboBox에 ListAll 추가
 	ComboBoxSourceItems.Add(MakeShared<FString>(ListUnused)); // ComboBox에 ListUnused 추가
 	ComboBoxSourceItems.Add(MakeShared<FString>(ListSameName)); // ComboBox에 ListSameName 추가
 
-	FSlateFontInfo TitleTextFont = FCoreStyle::Get().GetFontStyle(FName("EmbossedText")); // 글꼴
+	FSlateFontInfo TitleTextFont = GetEmboseedTextFont(); // 글꼴
 	TitleTextFont.Size = 20; // 글자 크기
 
 	ChildSlot
