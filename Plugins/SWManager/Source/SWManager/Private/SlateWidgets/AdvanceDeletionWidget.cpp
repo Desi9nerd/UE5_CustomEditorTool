@@ -304,6 +304,10 @@ FReply SAdvanceDeletionTab::OnDeleteButtonClicked(TSharedPtr<FAssetData> Clicked
 		{
 			StoredAssetsData.Remove(ClickedAssetData); // 클릭한 에셋을 StoredAssetsData배열에서 제거
 		}
+		 if(DisplayedAssetsData.Contains(ClickedAssetData))
+		 {
+			DisplayedAssetsData.Remove(ClickedAssetData); // 클릭한 에셋을 DisplayedAssetsData배열에서 제거
+		 }
 
 		// 에셋 리스트 새로고침
 		RefreshAssetListView();
