@@ -24,6 +24,20 @@ private:
 	TSharedPtr<SListView<TSharedPtr<FAssetData>>> ConstructedAssetListView;
 	void RefreshAssetListView(); // 에셋 리스트 새로고침
 
+#pragma region ComboBoxForListingCondition
+
+	TSharedRef<SComboBox<TSharedPtr<FString>>> ConstructComboBox(); // ComboBox 생성
+
+	TArray<TSharedPtr<FString>> ComboBoxSourceItems;
+
+	TSharedRef<SWidget> OnGenerateComboContent(TSharedPtr<FString> SourceItem);
+
+	void OnComboSelectionChanged(TSharedPtr<FString> SelectedOption, ESelectInfo::Type InSelectInfo); // ComboBox 선택 시 변경
+
+	TSharedPtr<STextBlock> ComboDisplayTextBlock;
+
+#pragma endregion
+
 #pragma region RowWidgetForAssetListView
 
 	TSharedRef<ITableRow> OnGenerateRowForList(TSharedPtr<FAssetData> AssetDataToDisplay, const TSharedRef<STableViewBase>& OwnerTable);

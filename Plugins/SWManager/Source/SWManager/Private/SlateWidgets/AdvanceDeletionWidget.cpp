@@ -3,6 +3,8 @@
 #include "DebugHeader.h"
 #include "SWManager.h"
 
+#define ListAll TEXT("모든 에셋")
+
 void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 {
 	bCanSupportFocus = true;
@@ -11,6 +13,8 @@ void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 
 	CheckBoxesArray.Empty();
 	AssetsDataToDeleteArray.Empty();
+
+	ComboBoxSourceItems.Add(MakeShared<FString>(ListAll)); // ComboBox에 ListAll 추가
 
 	FSlateFontInfo TitleTextFont = FCoreStyle::Get().GetFontStyle(FName("EmbossedText")); // 글꼴
 	TitleTextFont.Size = 20; // 글자 크기
@@ -35,6 +39,7 @@ void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 		.AutoHeight()
 		[
 			SNew(SHorizontalBox)
+
 		]
 
 		// 3번째 slot - 에셋 리스트
@@ -104,6 +109,41 @@ void SAdvanceDeletionTab::RefreshAssetListView() // 에셋 리스트 새로고�
 		ConstructedAssetListView->RebuildList();
 	}
 }
+
+#pragma region ComboBoxForListingCondition
+
+TSharedRef<SComboBox<TSharedPtr<FString>>> SAdvanceDeletionTab::ConstructComboBox() // ComboBox 생성
+{
+	TSharedRef<SComboBox<TSharedPtr<FString>>> ConstructedComboBox =
+		SNew(SComboBox<TSharedPtr<FString>>)
+		.OptionsSource(&ComboBoxSourceItems)
+		.OnGenerateWidget(this, &SAdvanceDeletionTab::OnGenerateComboContent)
+		.OnSelectionChanged(this, &SAdvanceDeletionTab::OnComboSelectionChanged) // 선택 시 함수 실행
+		[
+			SAssignNew(ComboDisplayTextBlock, STextBlock)
+			.Text(FText::FromString(TEXT("에셋 옵션 리스트")))
+		];
+
+	return ConstructedComboBox;
+}
+
+TSharedRef<SWidget> SAdvanceDeletionTab::OnGenerateComboContent(TSharedPtr<FString> SourceItem)
+{
+	TSharedRef<STextBlock> ContructedComboText = 
+		SNew(STextBlock)
+		.Text(FText::FromString(*SourceItem.Get()));
+
+	return ContructedComboText;
+}
+
+void SAdvanceDeletionTab::OnComboSelectionChanged(TSharedPtr<FString> SelectedOption, ESelectInfo::Type InSelectInfo) // ComboBox 선택 시 변경
+{
+	DebugHeader::Print(*SelectedOption.Get(), FColor::Cyan);
+
+	ComboDisplayTextBlock->SetText(FText::FromString(*SelectedOption.Get())); // 매개변수로 들어온 SelectedOption 문구를 띄운다
+}
+
+#pragma endregion
 
 #pragma region RowWidgetForAssetListView
 
