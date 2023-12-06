@@ -319,6 +319,36 @@ void FSWManagerModule::ListUnusedAssetsForAssetList(const TArray<TSharedPtr<FAss
 	}
 }
 
+void FSWManagerModule::ListSameNameAssetsForAssetList(const TArray<TSharedPtr<FAssetData>>& AssetsDataToFilter, TArray<TSharedPtr<FAssetData>>& OutSameNameAssetsData)
+{
+	OutSameNameAssetsData.Empty();
+
+	// Multimap을 사용하여 같은 이름을 가진 에셋들을 찾는다
+	TMultiMap<FString, TSharedPtr<FAssetData>> AssetsInfoMultiMap;
+
+	for (const TSharedPtr<FAssetData>& DataSharedPtr : AssetsDataToFilter)
+	{
+		AssetsInfoMultiMap.Emplace(DataSharedPtr->AssetName.ToString(), DataSharedPtr); // 모든 에셋을 AssetsInfoMultiMap에 담는다. 이 때 key는 AssetName이다.
+	}
+
+	for (const TSharedPtr<FAssetData>& DataSharedPtr : AssetsDataToFilter)
+	{
+		TArray< TSharedPtr <FAssetData> > OutAssetsData;
+		AssetsInfoMultiMap.MultiFind(DataSharedPtr->AssetName.ToString(), OutAssetsData);
+
+		if (OutAssetsData.Num() <= 1) continue; // AssetsInfoMultiMap에서 AssetName이 1개란 의미는 이름이 같은 에셋이 없다는 의미
+
+		// 같은 이름이지만 다른 에셋 데이터를 가지고 있다면 OutSameNameAssetsData에 담는다
+		for (const TSharedPtr<FAssetData>& SameNameData : OutAssetsData)
+		{
+			if (SameNameData.IsValid())
+			{
+				OutSameNameAssetsData.AddUnique(SameNameData); // 같은 이름을 가진 에셋을 OutSameNameAssetsData에 담는다
+			}
+		}
+	}
+}
+
 #pragma endregion
 
 void FSWManagerModule::ShutdownModule()

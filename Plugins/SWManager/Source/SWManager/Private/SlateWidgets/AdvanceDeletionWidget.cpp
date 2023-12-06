@@ -5,6 +5,7 @@
 
 #define ListAll TEXT("모든 에셋")
 #define ListUnused TEXT("사용하지 않는 에셋")
+#define ListSameName TEXT("같은 이름을 가진 에셋 ")
 
 void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 {
@@ -18,6 +19,7 @@ void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 
 	ComboBoxSourceItems.Add(MakeShared<FString>(ListAll)); // ComboBox에 ListAll 추가
 	ComboBoxSourceItems.Add(MakeShared<FString>(ListUnused)); // ComboBox에 ListUnused 추가
+	ComboBoxSourceItems.Add(MakeShared<FString>(ListSameName)); // ComboBox에 ListSameName 추가
 
 	FSlateFontInfo TitleTextFont = FCoreStyle::Get().GetFontStyle(FName("EmbossedText")); // 글꼴
 	TitleTextFont.Size = 20; // 글자 크기
@@ -162,6 +164,11 @@ void SAdvanceDeletionTab::OnComboSelectionChanged(TSharedPtr<FString> SelectedOp
 	else if (*SelectedOption.Get() == ListUnused) // 사용하지 않는 모든 에셋 리스트
 	{
 		SWManagerModule.ListUnusedAssetsForAssetList(StoredAssetsData, DisplayedAssetsData); // StoredAssetData의 에셋들 중 참조된 경우를 검사하여 사용하지 않는 에셋들을 DisplayedAssetsData에 업데이트한다.
+		RefreshAssetListView();
+	}
+	else if (*SelectedOption.Get() == ListSameName) // 같은 이름을 사용하는 모든 에셋 리스트
+	{
+		SWManagerModule.ListSameNameAssetsForAssetList(StoredAssetsData, DisplayedAssetsData); // StoredAssetData의 에셋들 중 같은 이름을 가진 에셋들을 DisplayedAssetsData에 업데이트한다.
 		RefreshAssetListView();
 	}
 }
