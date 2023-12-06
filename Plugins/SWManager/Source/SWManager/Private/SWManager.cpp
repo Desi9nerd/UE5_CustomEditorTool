@@ -349,6 +349,14 @@ void FSWManagerModule::ListSameNameAssetsForAssetList(const TArray<TSharedPtr<FA
 	}
 }
 
+void FSWManagerModule::SyncCBToClickedAssetForAssetList(const FString& AssetPathToSync)
+{
+	TArray<FString> AssetsPathToSync;
+	AssetsPathToSync.Add(AssetPathToSync);
+
+	UEditorAssetLibrary::SyncBrowserToObjects(AssetsPathToSync); // 선택한 에셋을 콘텐츠 브라우저에서 찾아 활성화 한다
+}
+
 #pragma endregion
 
 void FSWManagerModule::ShutdownModule()

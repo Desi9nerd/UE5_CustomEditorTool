@@ -46,6 +46,7 @@ public:
 	bool DeleteMultipleAssetsForAssetList(const TArray<FAssetData>& AssetsToDelete); // 매개변수로 받은 에셋TArray배열을 한번에 지우고 true리턴. 아니면 false리턴.
 	void ListUnusedAssetsForAssetList(const TArray<TSharedPtr<FAssetData>>& AssetsDataToFilter, TArray<TSharedPtr<FAssetData>>& OutUnusedAssetsData); // 사용하지 않는 에셋 리스트 업데이트
 	void ListSameNameAssetsForAssetList(const TArray<TSharedPtr<FAssetData>>& AssetsDataToFilter, TArray<TSharedPtr<FAssetData>>& OutSameNameAssetsData); // 같은 이름을 사용하는 에셋 리스트 업데이트
+	void SyncCBToClickedAssetForAssetList(const FString& AssetPathToSync); // 클릭한 에셋의 경로를 싱크
 
 #pragma endregion
 

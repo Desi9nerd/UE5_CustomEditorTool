@@ -21,6 +21,7 @@ private:
 	TArray<TSharedRef<SCheckBox>> CheckBoxesArray; // 체크박스들을 담는 배열
 	TArray<TSharedPtr<FAssetData>> AssetsDataToDeleteArray; // 체크박스 클릭 시 선택된 에셋들을 기록하는 TArray변수
 
+	void OnRowWidgetMouseButtonClicked(TSharedPtr<FAssetData> ClickedData); // 위젯 행 클릭 시
 	TSharedRef<SListView<TSharedPtr<FAssetData>>> ConstructAssetListView(); // 에셋 리스트 생성
 	TSharedPtr<SListView<TSharedPtr<FAssetData>>> ConstructedAssetListView;
 	void RefreshAssetListView(); // 에셋 리스트 새로고침

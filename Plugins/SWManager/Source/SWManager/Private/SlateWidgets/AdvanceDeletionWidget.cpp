@@ -98,6 +98,13 @@ void SAdvanceDeletionTab::Construct(const FArguments& InArgs)
 
 }
 
+void SAdvanceDeletionTab::OnRowWidgetMouseButtonClicked(TSharedPtr<FAssetData> ClickedData) // 위젯 행 클릭 시
+{
+	FSWManagerModule& SWManagerModule = FModuleManager::LoadModuleChecked<FSWManagerModule>(TEXT("SWManager"));
+
+	SWManagerModule.SyncCBToClickedAssetForAssetList(ClickedData->ObjectPath.ToString()); // 위젯 행 클릭 시 콘텐츠 브라우저에서 해당 에셋이 활성화된다 
+}
+
 TSharedRef<SListView<TSharedPtr<FAssetData>>> SAdvanceDeletionTab::ConstructAssetListView() // 에셋 리스트 생성
 {
 	// Construct 시 DisplayedAssetsData에 담은 정보를 사용해서 ConstructedAssetListView 설정
@@ -105,7 +112,8 @@ TSharedRef<SListView<TSharedPtr<FAssetData>>> SAdvanceDeletionTab::ConstructAsse
 		SNew(SListView<TSharedPtr<FAssetData>>)
 		.ItemHeight(24.f)
 		.ListItemsSource(&DisplayedAssetsData)
-		.OnGenerateRow(this, &SAdvanceDeletionTab::OnGenerateRowForList);
+		.OnGenerateRow(this, &SAdvanceDeletionTab::OnGenerateRowForList) // 행에 에셋 생성
+		.OnMouseButtonClick(this, &SAdvanceDeletionTab::OnRowWidgetMouseButtonClicked); // 해당 행을 클릭 시 함수 실행
 
 	// TSharedPtr형태인 ConstructedAssetListView를 .ToSharedRef()사용하여 TSharedRef형태로 변환해서 리턴 
 	return ConstructedAssetListView.ToSharedRef();
