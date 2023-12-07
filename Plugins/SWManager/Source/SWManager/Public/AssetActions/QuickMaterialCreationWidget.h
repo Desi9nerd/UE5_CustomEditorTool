@@ -19,6 +19,10 @@ public:
 	void CreateMaterialFromSelectedTextures();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CreateMaterialFromSelectedTextures")
+	bool bCustomMaterialName = true;
+
+	// bCustomMaterialName이 true일때만 MaterialName을 변경할 수 있다.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CreateMaterialFromSelectedTextures", meta = (EditCondition = "bCustomMaterialName")) 
 	FString MaterialName = TEXT("M_");
 
 #pragma endregion
