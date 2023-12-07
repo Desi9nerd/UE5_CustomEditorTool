@@ -2,7 +2,7 @@
 #include "Widgets/SCompoundWidget.h"
 
 /** Slate Widget을 위해 빈 클래스가 필요
- * 
+ *  제거 마법사 Slate Widget 클래스
  */
 class SAdvanceDeletionTab : public SCompoundWidget
 {
