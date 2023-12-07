@@ -6,6 +6,7 @@
 #include "AssetRegistryModule.h"
 #include "AssetToolsModule.h"
 #include "SlateWidgets/AdvanceDeletionWidget.h"
+#include "CustomStyle/SWManagerStyle.h"
 
 #define LOCTEXT_NAMESPACE "FSWManagerModule"
 
@@ -13,7 +14,10 @@ void FSWManagerModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 	// SWManager.uplugin에서 설정한 PreDefault 이후 실행됨
-	InitCBMenuExtention();
+
+	FSWManagerStyle::InitializeIcons(); // Custom Icon Init
+
+	InitCBMenuExtention(); // Content Browser Menu Extention Init
 
 	RegisterAdvanceDeletionTab(); // Tab 스폰 시키기
 }
@@ -59,7 +63,7 @@ void FSWManagerModule::AddCBMenuEntry(FMenuBuilder& MenuBuilder) // ContentBrows
 	(
 		FText::FromString(TEXT("사용하지 않는 에셋 제거하기")), // Menu Entry의 이름
 		FText::FromString(TEXT("폴더에서 사용하지 않는 에셋들을 안전하게 지우는 기능")), // Tooltip 설명
-		FSlateIcon(), // Custom Icon
+		FSlateIcon(FSWManagerStyle::GetStyleSetName(), "ContentBrowser.DeleteUnusedAssets"), // Custom Icon. "ContentBrowser.DeleteUnusedAssets"이름의 Style 적용
 		FExecuteAction::CreateRaw(this, &FSWManagerModule::OnDeleteUnsuedAssetButtonClicked) // 실행될 함수
 	);
 
@@ -67,7 +71,7 @@ void FSWManagerModule::AddCBMenuEntry(FMenuBuilder& MenuBuilder) // ContentBrows
 	(
 		FText::FromString(TEXT("사용하지 않는 빈 폴더 제거하기")), // Menu Entry의 이름
 		FText::FromString(TEXT("빈 폴더를 안전하게 지우는 기능")), // Tooltip 설명
-		FSlateIcon(), // Custom Icon
+		FSlateIcon(FSWManagerStyle::GetStyleSetName(), "ContentBrowser.DeleteEmptyFolders"), // Custom Icon
 		FExecuteAction::CreateRaw(this, &FSWManagerModule::OnDeleteEmptyFoldersButtonClicked) // 실행될 함수
 	);
 
@@ -75,7 +79,7 @@ void FSWManagerModule::AddCBMenuEntry(FMenuBuilder& MenuBuilder) // ContentBrows
 	(
 		FText::FromString(TEXT("제거 마법사")), // Menu Entry의 이름
 		FText::FromString(TEXT("탭에 제거할 에셋 목록 띄우기")), // Tooltip 설명
-		FSlateIcon(), // Custom Icon
+		FSlateIcon(FSWManagerStyle::GetStyleSetName(), "ContentBrowser.AdvanceDeletion"), // Custom Icon
 		FExecuteAction::CreateRaw(this, &FSWManagerModule::OnAdvanceDeletionButtonClicked) // 실행될 함수
 	);
 }
@@ -232,7 +236,8 @@ void FSWManagerModule::RegisterAdvanceDeletionTab()
 {
 	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(FName("AdvanceDeletion"), // Tab ID: "AdvanceDeletion"
 		FOnSpawnTab::CreateRaw(this, &FSWManagerModule::OnSpawnAdvanceDeltionTab))
-		.SetDisplayName(FText::FromString(TEXT("제거 마법사")));
+		.SetDisplayName(FText::FromString(TEXT("제거 마법사")))
+		.SetIcon(FSlateIcon(FSWManagerStyle::GetStyleSetName(), "ContentBrowser.AdvanceDeletion"));
 }
 
 TSharedRef<SDockTab> FSWManagerModule::OnSpawnAdvanceDeltionTab(const FSpawnTabArgs& SpawnTabArgs)
@@ -364,7 +369,9 @@ void FSWManagerModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
-	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(FName("AdvanceDeletion")); // Tab ID: "AdvanceDeletion" 
+	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(FName("AdvanceDeletion")); // Tab ID: "AdvanceDeletion"
+
+	FSWManagerStyle::ShutDown(); // Custom Icon Shutdown
 }
 
 #undef LOCTEXT_NAMESPACE
