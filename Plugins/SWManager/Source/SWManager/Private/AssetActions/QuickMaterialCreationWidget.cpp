@@ -160,7 +160,7 @@ void UQuickMaterialCreationWidget::Default_CreateMaterialNodes(TObjectPtr<UMater
 
 #pragma endregion
 
-#pragma region CreateMaterialNodes
+#pragma region CreateMaterialNodesConnectPins
 
 bool UQuickMaterialCreationWidget::TryConnectBaseColor(TObjectPtr<UMaterialExpressionTextureSample> TextureSampleNode, TObjectPtr<UTexture2D> SelectedTexture, TObjectPtr<UMaterial> CreatedMaterial) 
 {
