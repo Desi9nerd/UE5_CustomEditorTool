@@ -2,6 +2,8 @@
 #include "DebugHeader.h"
 #include "EditorUtilityLibrary.h"
 #include "EditorAssetLibrary.h"
+#include "AssetToolsModule.h"
+#include "Factories/MaterialFactoryNew.h"
 
 #pragma region QuickMaterialCreationCore
 
@@ -26,7 +28,13 @@ void UQuickMaterialCreationWidget::CreateMaterialFromSelectedTextures()
 		// 생성하려는 이름(=MaterialName)이 이미 있는지 확인하고 이미 있다면 return
 		if (CheckIsNameUsed(SelectedTextureFolderPath, MaterialName)) return;
 
-		DebugHeader::Print(SelectedTextureFolderPath, FColor::Cyan); // 선택한 데이터의 파일 경로를 디버깅 메시지로 띄움
+		TWeakObjectPtr<UMaterial> CreatedMaterial = CreateMaterialAsset(MaterialName, SelectedTextureFolderPath); // Material 생성 후 CreatedMaterial변수에 담음
+
+		if (false == CreatedMaterial.IsValid()) // Material 생성에 실패했다면
+		{
+			DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("Material 생성에 실패했습니다."));
+			return;
+		}
 	}
 }
 
@@ -96,6 +104,17 @@ bool UQuickMaterialCreationWidget::CheckIsNameUsed(const FString& FolderPathToCh
 	}
 
 	return false;
+}
+
+TObjectPtr<UMaterial> UQuickMaterialCreationWidget::CreateMaterialAsset(const FString& NameOfTheMaterial, const FString& PathToPutMaterial) // Material 생성
+{
+	FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>(TEXT("AssetTools")); // FAssetToolsModule를 사용하려면 #include "AssetToolsModule.h" 필요
+
+	TObjectPtr<UMaterialFactoryNew> MaterialFactory = NewObject<UMaterialFactoryNew>(); // UMaterialFactoryNew를 사용하려면 #include "Factories/MaterialFactoryNew.h" 필요
+
+	TObjectPtr<UObject> CreatedObject = AssetToolsModule.Get().CreateAsset(NameOfTheMaterial, PathToPutMaterial, UMaterial::StaticClass(), MaterialFactory); // NameOfTheMaterial이름으로 에셋 생성
+
+	return Cast<UMaterial>(CreatedObject); // 생성한 에셋을 UMaterial타입으로 캐스팅하여 UMaterial타입으로 return
 }
 
 #pragma endregion

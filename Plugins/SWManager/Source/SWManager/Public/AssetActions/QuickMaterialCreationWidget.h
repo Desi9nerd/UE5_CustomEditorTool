@@ -5,7 +5,8 @@
 #include "QuickMaterialCreationWidget.generated.h"
 
 /** Material 관련 EditorUtilityWidget
- * 
+ *  선택한 Texture를 사용해서 Material 생성
+ *	bCustomMaterailName==true면 이름을 지을 수 있고, false면 Texture이름에 M_ 접두어를 붙인 이름으로 생성 
  */
 UCLASS()
 class SWMANAGER_API UQuickMaterialCreationWidget : public UEditorUtilityWidget
@@ -32,6 +33,7 @@ private:
 
 	bool ProcessSelectedData(const TArray<FAssetData>& SelectedDataToProccess, TArray<UTexture2D*>& OutSelectedTexturesArray, FString& OutSelectedTexturePackagePath);
 	bool CheckIsNameUsed(const FString& FolderPathToCheck, const FString& MaterialNameToCheck); // 생성하려는 이름이 이미 있는지 확인
+	TObjectPtr<UMaterial> CreateMaterialAsset(const FString& NameOfTheMaterial, const FString& PathToPutMaterial); // Material 생성
 
 #pragma endregion
 
