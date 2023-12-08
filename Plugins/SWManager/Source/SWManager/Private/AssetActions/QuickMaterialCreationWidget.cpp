@@ -1,6 +1,7 @@
 ﻿#include "AssetActions/QuickMaterialCreationWidget.h"
 #include "DebugHeader.h"
 #include "EditorUtilityLibrary.h"
+#include "EditorAssetLibrary.h"
 
 #pragma region QuickMaterialCreationCore
 
@@ -21,6 +22,9 @@ void UQuickMaterialCreationWidget::CreateMaterialFromSelectedTextures()
 
 		// 선택한 데이터를 처리
 		if (false == ProcessSelectedData(SelectedAssetsData, SelectedTexturesArray, SelectedTextureFolderPath)) return;
+
+		// 생성하려는 이름(=MaterialName)이 이미 있는지 확인하고 이미 있다면 return
+		if (CheckIsNameUsed(SelectedTextureFolderPath, MaterialName)) return;
 
 		DebugHeader::Print(SelectedTextureFolderPath, FColor::Cyan); // 선택한 데이터의 파일 경로를 디버깅 메시지로 띄움
 	}
@@ -71,6 +75,27 @@ bool UQuickMaterialCreationWidget::ProcessSelectedData(const TArray<FAssetData>&
 	}
 
 	return true;
+}
+
+bool UQuickMaterialCreationWidget::CheckIsNameUsed(const FString& FolderPathToCheck, const FString& MaterialNameToCheck) // 생성하려는 이름이 이미 있는지 확인
+{
+	TArray<FString> ExistingAssetsPaths = UEditorAssetLibrary::ListAssets(FolderPathToCheck, false); // 에셋들의 파일경로를 담음
+
+	for (const FString& ExistingAssetPath : ExistingAssetsPaths)
+	{
+		const FString ExistingAssetName = FPaths::GetBaseFilename(ExistingAssetPath); // 파일경로에 있는 에셋 이름을 담음 
+
+		// ExistingAssetName이 새로 생성하려는 이름(=MaterialNameToCheck)과 같다면 메시지를 띄우고 true 리턴 종료
+		if (ExistingAssetName.Equals(MaterialNameToCheck)) 
+		{
+			DebugHeader::ShowMsgDialog(EAppMsgType::Ok, MaterialNameToCheck +
+				TEXT(" 는 이미 사용중인 이름입니다."));
+
+			return true;
+		}
+	}
+
+	return false;
 }
 
 #pragma endregion
