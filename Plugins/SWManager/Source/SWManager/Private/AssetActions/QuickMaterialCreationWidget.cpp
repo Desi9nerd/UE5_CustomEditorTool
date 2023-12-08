@@ -42,8 +42,25 @@ void UQuickMaterialCreationWidget::CreateMaterialFromSelectedTextures()
 	for (TObjectPtr<UTexture2D> SelectedTexture : SelectedTexturesArray)
 	{
 		if (false == IsValid(SelectedTexture)) continue;
+		
+		switch (ChannelPackingType)
+		{
+		case E_ChannelPackingType::ECPT_NoChannelPacking:
+			// Texture타입에 알맞는 노드 생성 후 핀 연결
+			Default_CreateMaterialNodes(CreatedMaterial, SelectedTexture, PinsConnectedCounter);
+			break;
+			
+		case E_ChannelPackingType::ECPT_ORM:
+			// 
+			ORM_CreateMaterialNodes(CreatedMaterial, SelectedTexture, PinsConnectedCounter);
+			break;
 
-		Default_CreateMaterialNodes(CreatedMaterial, SelectedTexture, PinsConnectedCounter); // Texture타입에 알맞는 노드 생성 후 핀 연결
+		case E_ChannelPackingType::ECPT_MAX:
+			break;
+
+		default:
+			break;
+		}
 	}
 
 	if (PinsConnectedCounter > 0)
@@ -186,6 +203,38 @@ void UQuickMaterialCreationWidget::Default_CreateMaterialNodes(TObjectPtr<UMater
 	DebugHeader::Print(TEXT("Texture 연결 실패 : ") + SelectedTexture->GetName(), FColor::Red);
 }
 
+void UQuickMaterialCreationWidget::ORM_CreateMaterialNodes(TObjectPtr<UMaterial> CreatedMaterial, TObjectPtr<UTexture2D> SelectedTexture, uint32& PinsConnectedCounter)
+{
+	TObjectPtr<UMaterialExpressionTextureSample> TextureSampleNode = NewObject<UMaterialExpressionTextureSample>(CreatedMaterial);
+
+	if (false == IsValid(TextureSampleNode)) return;
+
+	if (false == CreatedMaterial->BaseColor.IsConnected()) // BaseColor가 연결X
+	{
+		if (TryConnectBaseColor(TextureSampleNode, SelectedTexture, CreatedMaterial))
+		{
+			PinsConnectedCounter++;
+			return;
+		}
+	}
+	if (false == CreatedMaterial->Normal.IsConnected()) // Normal이 연결X
+	{
+		if (TryConnectNormal(TextureSampleNode, SelectedTexture, CreatedMaterial))
+		{
+			PinsConnectedCounter++;
+			return;
+		}
+	}
+	if (false == CreatedMaterial->Roughness.IsConnected()) // Roughness이 연결X
+	{
+		if (TryConnectORM(TextureSampleNode, SelectedTexture, CreatedMaterial))
+		{
+			PinsConnectedCounter += 3;
+			return;
+		}
+	}
+}
+
 #pragma endregion
 
 #pragma region CreateMaterialNodesConnectPins
@@ -315,6 +364,34 @@ bool UQuickMaterialCreationWidget::TryConnectAO(TObjectPtr<UMaterialExpressionTe
 		}
 	}
 
+	return false;
+}
+
+bool UQuickMaterialCreationWidget::TryConnectORM(TObjectPtr<UMaterialExpressionTextureSample> TextureSampleNode, TObjectPtr<UTexture2D> SelectedTexture, TObjectPtr<UMaterial> CreatedMaterial)
+{
+	for (const FString& ORM_Name : ORMArray)
+	{
+		if (SelectedTexture->GetName().Contains(ORM_Name))
+		{
+			SelectedTexture->CompressionSettings = TextureCompressionSettings::TC_Masks;
+			SelectedTexture->SRGB = false;
+			SelectedTexture->PostEditChange();
+
+			TextureSampleNode->Texture = SelectedTexture;
+			TextureSampleNode->SamplerType = EMaterialSamplerType::SAMPLERTYPE_Masks;
+
+			CreatedMaterial->Expressions.Add(TextureSampleNode);
+			CreatedMaterial->AmbientOcclusion.Connect(1, TextureSampleNode); // AO 연결
+			CreatedMaterial->Roughness.Connect(2, TextureSampleNode); // Roughness 연결
+			CreatedMaterial->Metallic.Connect(3, TextureSampleNode); // Metallic 연결
+			CreatedMaterial->PostEditChange();
+
+			TextureSampleNode->MaterialExpressionEditorX -= 600; // x 위치 이동
+			TextureSampleNode->MaterialExpressionEditorY += 960; // y 위치 이동
+
+			return true;
+		}
+	}
 	return false;
 }
 

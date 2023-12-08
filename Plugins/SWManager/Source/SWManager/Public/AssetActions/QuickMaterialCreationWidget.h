@@ -8,6 +8,15 @@
  *  선택한 Texture를 사용해서 Material 생성
  *	bCustomMaterailName==true면 이름을 지을 수 있고, false면 Texture이름에 M_ 접두어를 붙인 이름으로 생성 
  */
+
+UENUM(BlueprintType)
+enum class E_ChannelPackingType : uint8
+{
+	ECPT_NoChannelPacking UMETA(DisplayName = "No Channel Packing"),
+	ECPT_ORM UMETA(DisplayName = "OcclusionRoughnessMetallic"),
+	ECPT_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
 UCLASS()
 class SWMANAGER_API UQuickMaterialCreationWidget : public UEditorUtilityWidget
 {
@@ -16,8 +25,11 @@ public:
 
 #pragma region QuickMaterialCreationCore
 
-	UFUNCTION(BlueprintCallable)
-	void CreateMaterialFromSelectedTextures();
+	UFUNCTION(BlueprintCallable) // WBP_QuickMaterialCreation에 노출됨
+	void CreateMaterialFromSelectedTextures(); // 선택된 Texture로 Material 생성
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CreateMaterialFromSelectedTextures")
+	E_ChannelPackingType ChannelPackingType = E_ChannelPackingType::ECPT_NoChannelPacking;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CreateMaterialFromSelectedTextures")
 	bool bCustomMaterialName = true;
@@ -65,6 +77,13 @@ public:
 		TEXT("_AO")
 	};
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Supported Texture Names")
+	TArray<FString> ORMArray = {
+		TEXT("_arm"),
+		TEXT("_OcclusionRoughnessMetallic"),
+		TEXT("_ORM")
+	};
+
 #pragma endregion
 
 private:
@@ -74,6 +93,7 @@ private:
 	bool CheckIsNameUsed(const FString& FolderPathToCheck, const FString& MaterialNameToCheck); // 생성하려는 이름이 이미 있는지 확인
 	TObjectPtr<UMaterial> CreateMaterialAsset(const FString& NameOfTheMaterial, const FString& PathToPutMaterial); // Material 생성
 	void Default_CreateMaterialNodes(TObjectPtr<UMaterial> CreatedMaterial, TObjectPtr<UTexture2D> SelectedTexture, uint32& PinsConnectedCounter); // Material Node 생성
+	void ORM_CreateMaterialNodes(TObjectPtr<UMaterial> CreatedMaterial, TObjectPtr<UTexture2D> SelectedTexture, uint32& PinsConnectedCounter); // Material Node 생성 (Channel Packed Texture인 경우)
 
 #pragma endregion
 
@@ -84,6 +104,8 @@ private:
 	bool TryConnectRoughness(TObjectPtr<UMaterialExpressionTextureSample> TextureSampleNode, TObjectPtr<UTexture2D> SelectedTexture, TObjectPtr<UMaterial> CreatedMaterial);
 	bool TryConnectNormal(TObjectPtr<UMaterialExpressionTextureSample> TextureSampleNode, TObjectPtr<UTexture2D> SelectedTexture, TObjectPtr<UMaterial> CreatedMaterial);
 	bool TryConnectAO(TObjectPtr<UMaterialExpressionTextureSample> TextureSampleNode, TObjectPtr<UTexture2D> SelectedTexture, TObjectPtr<UMaterial> CreatedMaterial);
+	bool TryConnectORM(TObjectPtr<UMaterialExpressionTextureSample> TextureSampleNode, TObjectPtr<UTexture2D> SelectedTexture, TObjectPtr<UMaterial> CreatedMaterial); // Channel Packed Texture인 경우, AO, Roughness, Metallic을 차례대로 연결해준 후 true 리턴
+
 #pragma endregion
 
 };
