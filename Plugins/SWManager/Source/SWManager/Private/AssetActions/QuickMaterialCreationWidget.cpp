@@ -4,6 +4,8 @@
 #include "EditorAssetLibrary.h"
 #include "AssetToolsModule.h"
 #include "Factories/MaterialFactoryNew.h"
+#include "Materials/MaterialInstanceConstant.h" // UMaterialInstanceConstant 사용 시 필요
+#include "Factories/MaterialInstanceConstantFactoryNew.h" // UMaterialInstanceConstantFactoryNew 사용 시 필요
 
 #pragma region QuickMaterialCreationCore
 
@@ -25,10 +27,10 @@ void UQuickMaterialCreationWidget::CreateMaterialFromSelectedTextures()
 	uint32 PinsConnectedCounter = 0;
 
 	// 선택한 데이터를 처리
-	if (false == ProcessSelectedData(SelectedAssetsData, SelectedTexturesArray, SelectedTextureFolderPath)) return;
+	if (false == ProcessSelectedData(SelectedAssetsData, SelectedTexturesArray, SelectedTextureFolderPath)) { MaterialName = TEXT("M_"); return; }
 
 	// 생성하려는 이름(=MaterialName)이 이미 있는지 확인하고 이미 있다면 return
-	if (CheckIsNameUsed(SelectedTextureFolderPath, MaterialName)) return;
+	if (CheckIsNameUsed(SelectedTextureFolderPath, MaterialName)) { MaterialName = TEXT("M_"); return; }
 
 	TObjectPtr<UMaterial> CreatedMaterial = CreateMaterialAsset(MaterialName, SelectedTextureFolderPath); // Material 생성 후 CreatedMaterial변수에 담음
 
@@ -67,6 +69,11 @@ void UQuickMaterialCreationWidget::CreateMaterialFromSelectedTextures()
 	{
 		DebugHeader::ShowNotifyInfo(TEXT("총 ")
 			+ FString::FromInt(PinsConnectedCounter) + (TEXT(" 개 핀 연결 성공")));
+	}
+
+	if (bCreateMaterialInstance) // 생성하려는 Material Instance의 이름이 사용가능하면
+	{
+		CreateMaterialInstanceAsset(CreatedMaterial, MaterialName, SelectedTextureFolderPath); // Material Instance 생성
 	}
 
 	MaterialName = TEXT("M_");
@@ -396,3 +403,28 @@ bool UQuickMaterialCreationWidget::TryConnectORM(TObjectPtr<UMaterialExpressionT
 }
 
 #pragma endregion
+
+TObjectPtr<UMaterialInstanceConstant> UQuickMaterialCreationWidget::CreateMaterialInstanceAsset(TObjectPtr<UMaterial> CreatedMaterial, FString NameOfMaterialInstance, const FString& PathToPutMI) // Material Instance 생성
+{
+	NameOfMaterialInstance.RemoveFromStart(TEXT("M_")); // 접두어 M_ 제거
+	NameOfMaterialInstance.InsertAt(0, TEXT("MI_")); // 접두어 MI_ 삽입
+
+	TObjectPtr<UMaterialInstanceConstantFactoryNew> MIFactoryNew = NewObject<UMaterialInstanceConstantFactoryNew>(); // UMaterialInstanceConstantFactoryNew 사용 시 #include "Factories/MaterialInstanceConstantFactoryNew.h" 필요
+
+	FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>(TEXT("AssetTools"));
+
+	TObjectPtr<UObject> CreatedObject = AssetToolsModule.Get().CreateAsset(NameOfMaterialInstance, PathToPutMI, UMaterialInstanceConstant::StaticClass(), MIFactoryNew); // NameOfMaterialInstance 이름으로 UObject 생성. UMaterialInstanceConstant 사용하려면 #include "Materials/MaterialInstanceConstant.h" 필요
+
+	// 방금 생성한 CreatedObject를 UMaterialInstanceConstant 타입으로 캐스팅하여 CreatedMI 변수에 담음(=UObject타입을 UMaterialInstanceConstant타입으로 변환)
+	if (TObjectPtr<UMaterialInstanceConstant> CreatedMI = Cast<UMaterialInstanceConstant>(CreatedObject)) // 캐스팅 성공 시
+	{
+		CreatedMI->SetParentEditorOnly(CreatedMaterial); // 생성한 CreatedMI의 부모 Material를 CreatedMaterial로 설정
+
+		CreatedMI->PostEditChange(); // CreatedMI(=Material Instance) 업데이트
+		CreatedMaterial->PostEditChange(); // CreatedMaterial(=Material) 업데이트
+
+		return CreatedMI;
+	}
+
+	return nullptr;
+}

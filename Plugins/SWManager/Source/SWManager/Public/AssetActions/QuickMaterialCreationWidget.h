@@ -38,6 +38,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CreateMaterialFromSelectedTextures", meta = (EditCondition = "bCustomMaterialName")) 
 	FString MaterialName = TEXT("M_");
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CreateMaterialFromSelectedTextures")
+	bool bCreateMaterialInstance = false; // 생성하려는 Material Instance 이름이 사용중인지 확인. 이름이 사용가능하면 true, 사용불가능하면 false로 설정 
+
 #pragma endregion
 
 #pragma region SupportedTextureNames
@@ -107,5 +110,7 @@ private:
 	bool TryConnectORM(TObjectPtr<UMaterialExpressionTextureSample> TextureSampleNode, TObjectPtr<UTexture2D> SelectedTexture, TObjectPtr<UMaterial> CreatedMaterial); // Channel Packed Texture인 경우, AO, Roughness, Metallic을 차례대로 연결해준 후 true 리턴
 
 #pragma endregion
+
+	TObjectPtr<class UMaterialInstanceConstant> CreateMaterialInstanceAsset(TObjectPtr<UMaterial> CreatedMaterial, FString NameOfMaterialInstance, const FString& PathToPutMI); // Material Instance 생성
 
 };
