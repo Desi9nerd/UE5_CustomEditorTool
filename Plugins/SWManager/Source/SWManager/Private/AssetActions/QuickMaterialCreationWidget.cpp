@@ -11,30 +11,30 @@ void UQuickMaterialCreationWidget::CreateMaterialFromSelectedTextures()
 {
 	if (bCustomMaterialName)
 	{
-		// 이름을 입력하지 않거나 이미 있는 이름을 입력했다면
-		if (MaterialName.IsEmpty() || MaterialName.Equals(TEXT("M_"))) 
+		// 이름을 입력하지 않거나 "M_"만 입력했다면
+		if (MaterialName.IsEmpty() || MaterialName.Equals(TEXT("M_")))
 		{
 			DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("해당 이름을 사용할 수 없습니다."));
 			return;
 		}
+	}
 
-		TArray<FAssetData> SelectedAssetsData = UEditorUtilityLibrary::GetSelectedAssetData();
-		TArray<UTexture2D*> SelectedTexturesArray;
-		FString SelectedTextureFolderPath;
+	TArray<FAssetData> SelectedAssetsData = UEditorUtilityLibrary::GetSelectedAssetData();
+	TArray<UTexture2D*> SelectedTexturesArray;
+	FString SelectedTextureFolderPath;
 
-		// 선택한 데이터를 처리
-		if (false == ProcessSelectedData(SelectedAssetsData, SelectedTexturesArray, SelectedTextureFolderPath)) return;
+	// 선택한 데이터를 처리
+	if (false == ProcessSelectedData(SelectedAssetsData, SelectedTexturesArray, SelectedTextureFolderPath)) return;
 
-		// 생성하려는 이름(=MaterialName)이 이미 있는지 확인하고 이미 있다면 return
-		if (CheckIsNameUsed(SelectedTextureFolderPath, MaterialName)) return;
+	// 생성하려는 이름(=MaterialName)이 이미 있는지 확인하고 이미 있다면 return
+	if (CheckIsNameUsed(SelectedTextureFolderPath, MaterialName)) return;
 
-		TWeakObjectPtr<UMaterial> CreatedMaterial = CreateMaterialAsset(MaterialName, SelectedTextureFolderPath); // Material 생성 후 CreatedMaterial변수에 담음
+	TObjectPtr<UMaterial> CreatedMaterial = CreateMaterialAsset(MaterialName, SelectedTextureFolderPath); // Material 생성 후 CreatedMaterial변수에 담음
 
-		if (false == CreatedMaterial.IsValid()) // Material 생성에 실패했다면
-		{
-			DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("Material 생성에 실패했습니다."));
-			return;
-		}
+	if (false == IsValid(CreatedMaterial)) // Material 생성에 실패했다면
+	{
+		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("Material 생성에 실패했습니다."));
+		return;
 	}
 }
 
