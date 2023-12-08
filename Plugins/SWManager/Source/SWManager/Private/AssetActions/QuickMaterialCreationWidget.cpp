@@ -20,8 +20,9 @@ void UQuickMaterialCreationWidget::CreateMaterialFromSelectedTextures()
 	}
 
 	TArray<FAssetData> SelectedAssetsData = UEditorUtilityLibrary::GetSelectedAssetData();
-	TArray<UTexture2D*> SelectedTexturesArray;
+	TArray<TObjectPtr<UTexture2D>> SelectedTexturesArray;
 	FString SelectedTextureFolderPath;
+	uint32 PinsConnectedCounter = 0;
 
 	// 선택한 데이터를 처리
 	if (false == ProcessSelectedData(SelectedAssetsData, SelectedTexturesArray, SelectedTextureFolderPath)) return;
@@ -35,6 +36,14 @@ void UQuickMaterialCreationWidget::CreateMaterialFromSelectedTextures()
 	{
 		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("Material 생성에 실패했습니다."));
 		return;
+	}
+
+	// 선택한 Texture가 해당 Texture에 알맞는 노드 생성 후 루프를 돌며 알맞은 소켓을 찾아 핀 연결
+	for (TObjectPtr<UTexture2D> SelectedTexture : SelectedTexturesArray)
+	{
+		if (false == IsValid(SelectedTexture)) continue;
+
+		Default_CreateMaterialNodes(CreatedMaterial, SelectedTexture, PinsConnectedCounter); // Texture타입에 알맞는 노드 생성 후 핀 연결
 	}
 }
 
@@ -115,6 +124,49 @@ TObjectPtr<UMaterial> UQuickMaterialCreationWidget::CreateMaterialAsset(const FS
 	TObjectPtr<UObject> CreatedObject = AssetToolsModule.Get().CreateAsset(NameOfTheMaterial, PathToPutMaterial, UMaterial::StaticClass(), MaterialFactory); // NameOfTheMaterial이름으로 에셋 생성
 
 	return Cast<UMaterial>(CreatedObject); // 생성한 에셋을 UMaterial타입으로 캐스팅하여 UMaterial타입으로 return
+}
+
+void UQuickMaterialCreationWidget::Default_CreateMaterialNodes(TObjectPtr<UMaterial> CreatedMaterial, TObjectPtr<UTexture2D> SelectedTexture, uint32& PinsConnectedCounter) // Material Node 생성
+{
+	TObjectPtr<UMaterialExpressionTextureSample> TextureSampleNode = NewObject<UMaterialExpressionTextureSample>(CreatedMaterial);
+
+	if (false == IsValid(TextureSampleNode)) return;
+
+	if (false == CreatedMaterial->BaseColor.IsConnected()) // BaseColor가 연결X
+	{
+		// TextureSampleNode 노드 연결
+		if (TryConnectBaseColor(TextureSampleNode, SelectedTexture, CreatedMaterial))
+		{
+			PinsConnectedCounter++;
+			return;
+		}
+	}
+}
+
+#pragma endregion
+
+#pragma region CreateMaterialNodes
+
+bool UQuickMaterialCreationWidget::TryConnectBaseColor(TObjectPtr<UMaterialExpressionTextureSample> TextureSampleNode, TObjectPtr<UTexture2D> SelectedTexture, TObjectPtr<UMaterial> CreatedMaterial) 
+{
+	for (const FString& BaseColorName : BaseColorArray)
+	{
+		if (SelectedTexture->GetName().Contains(BaseColorName))
+		{
+			// 노드를 BaseColor 소켓에 핀 연결
+			TextureSampleNode->Texture = SelectedTexture;
+
+			CreatedMaterial->Expressions.Add(TextureSampleNode);
+			CreatedMaterial->BaseColor.Expression = TextureSampleNode;
+			CreatedMaterial->PostEditChange();
+
+			TextureSampleNode->MaterialExpressionEditorX -= 600; // 위치가 겹치지 않게 위치 이동
+
+			return true;
+		}
+	}
+
+	return false;
 }
 
 #pragma endregion

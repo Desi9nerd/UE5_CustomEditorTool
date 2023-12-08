@@ -73,6 +73,13 @@ private:
 	bool ProcessSelectedData(const TArray<FAssetData>& SelectedDataToProccess, TArray<UTexture2D*>& OutSelectedTexturesArray, FString& OutSelectedTexturePackagePath);
 	bool CheckIsNameUsed(const FString& FolderPathToCheck, const FString& MaterialNameToCheck); // 생성하려는 이름이 이미 있는지 확인
 	TObjectPtr<UMaterial> CreateMaterialAsset(const FString& NameOfTheMaterial, const FString& PathToPutMaterial); // Material 생성
+	void Default_CreateMaterialNodes(TObjectPtr<UMaterial> CreatedMaterial, TObjectPtr<UTexture2D> SelectedTexture, uint32& PinsConnectedCounter); // Material Node 생성
+
+#pragma endregion
+
+#pragma region CreateMaterialNodes
+
+	bool TryConnectBaseColor(TObjectPtr<UMaterialExpressionTextureSample> TextureSampleNode, TObjectPtr<UTexture2D> SelectedTexture, TObjectPtr<UMaterial> CreatedMaterial); // BaseColor Node 연결이 되어 있으면 false, 안 되어 있으면 연결하고 true 리턴
 
 #pragma endregion
 
