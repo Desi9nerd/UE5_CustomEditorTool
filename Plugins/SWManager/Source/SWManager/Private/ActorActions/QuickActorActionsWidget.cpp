@@ -123,14 +123,16 @@ void UQuickActorActionsWidget::DuplicateActors() // Actor 복제
 
 void UQuickActorActionsWidget::RandomizeActorTransform() // Actor를 랜덤으로 Transform
 {
-	const bool ConditionNotSet =
+	const bool bConditionNotSet =
 		false == RandomActorRotation.bRandomizeRotYaw &&
 		false == RandomActorRotation.bRandomizeRotPitch &&
-		false == RandomActorRotation.bRandomizeRotRoll;
+		false == RandomActorRotation.bRandomizeRotRoll &&
+		false == bRandomizeScale &&
+		false == bRandomizeOffset;
 
-	if (ConditionNotSet)
+	if (bConditionNotSet)
 	{
-		DebugHeader::ShowNotifyInfo(TEXT("No variation condition specified"));
+		DebugHeader::ShowNotifyInfo(TEXT("변경 조건이 설정되지 않았습니다."));
 		return;
 	}
 
@@ -167,14 +169,19 @@ void UQuickActorActionsWidget::RandomizeActorTransform() // Actor를 랜덤으�
 
 			SelectedActor->AddActorWorldRotation(FRotator(0.f, 0.f, RandomRotRollValue));
 		}
+		if (bRandomizeScale) // Scale
+		{
+			SelectedActor->SetActorScale3D(FVector(FMath::RandRange(ScaleMin, ScaleMax)));
+		}
 
-		const bool bShouldIncreaseCounter =
-			RandomActorRotation.bRandomizeRotYaw ||
-			RandomActorRotation.bRandomizeRotPitch ||
-			RandomActorRotation.bRandomizeRotRoll;
+		if (bRandomizeOffset) // Offset
+		{
+			const float RandomOffsetValue = FMath::RandRange(OffsetMin, OffsetMax);
 
-		if (bShouldIncreaseCounter) Counter++; // Transform된 Actor 수++
+			SelectedActor->AddActorWorldOffset(FVector(RandomOffsetValue, RandomOffsetValue, 0.f)); 
+		}
 
+		Counter++; // Transform된 Actor 수++
 	}
 
 	if (Counter > 0)
