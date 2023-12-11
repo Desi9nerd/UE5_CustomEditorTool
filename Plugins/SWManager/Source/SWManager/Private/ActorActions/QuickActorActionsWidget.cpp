@@ -121,6 +121,70 @@ void UQuickActorActionsWidget::DuplicateActors() // Actor 복제
 	}
 }
 
+void UQuickActorActionsWidget::RandomizeActorTransform() // Actor를 랜덤으로 Transform
+{
+	const bool ConditionNotSet =
+		false == RandomActorRotation.bRandomizeRotYaw &&
+		false == RandomActorRotation.bRandomizeRotPitch &&
+		false == RandomActorRotation.bRandomizeRotRoll;
+
+	if (ConditionNotSet)
+	{
+		DebugHeader::ShowNotifyInfo(TEXT("No variation condition specified"));
+		return;
+	}
+
+	if (false == GetEditorActorSubsystem()) return;
+
+	TArray<AActor*> SelectedActors = EditorActorSubsystem->GetSelectedLevelActors(); // 선택된 Actor들을 담음
+	uint32 Counter = 0; // Transform된 Actor 수를 기록할 변수
+
+	if (SelectedActors.Num() == 0)
+	{
+		DebugHeader::ShowNotifyInfo(TEXT("선택된 Actor가 없습니다."));
+		return;
+	}
+
+	for (AActor* SelectedActor : SelectedActors)
+	{
+		if (false == IsValid(SelectedActor)) continue; 
+
+		if (RandomActorRotation.bRandomizeRotYaw) // Yaw
+		{
+			const float RandomRotYawValue = FMath::RandRange(RandomActorRotation.RotYawMin, RandomActorRotation.RotYawMax);
+
+			SelectedActor->AddActorWorldRotation(FRotator(0.f, RandomRotYawValue, 0.f));
+		}
+		if (RandomActorRotation.bRandomizeRotPitch) // Pitch
+		{
+			const float RandomRotPitchValue = FMath::RandRange(RandomActorRotation.RotPitchMin, RandomActorRotation.RotPitchMax);
+
+			SelectedActor->AddActorWorldRotation(FRotator(RandomRotPitchValue, 0.f, 0.f));
+		}
+		if (RandomActorRotation.bRandomizeRotRoll) // Roll
+		{
+			const float RandomRotRollValue = FMath::RandRange(RandomActorRotation.RotRollMin, RandomActorRotation.RotRollMax);
+
+			SelectedActor->AddActorWorldRotation(FRotator(0.f, 0.f, RandomRotRollValue));
+		}
+
+		const bool bShouldIncreaseCounter =
+			RandomActorRotation.bRandomizeRotYaw ||
+			RandomActorRotation.bRandomizeRotPitch ||
+			RandomActorRotation.bRandomizeRotRoll;
+
+		if (bShouldIncreaseCounter) Counter++; // Transform된 Actor 수++
+
+	}
+
+	if (Counter > 0)
+	{
+		DebugHeader::ShowNotifyInfo(TEXT("총 ") +
+			FString::FromInt(Counter) + TEXT(" 개의 Actor들이 Tranform 되었습니다."));
+	}
+
+}
+
 bool UQuickActorActionsWidget::GetEditorActorSubsystem()
 {
 	if (false == IsValid(EditorActorSubsystem))

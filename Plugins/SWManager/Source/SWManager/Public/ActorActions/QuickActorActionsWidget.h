@@ -4,7 +4,10 @@
 #include "EditorUtilityWidget.h"
 #include "QuickActorActionsWidget.generated.h"
 
-/** Actor의 SRT(Scale, Rotate, Transform)을 조작하는 기능의 Tool을 구현하는 클래스
+/**	아래 3가지의 기능들을 수행하는 Tool를 만드는 클래스
+ *	1. 비슷한 이름의 Actor들을 선택하는 기능
+ *	2. 선택한 Actor를 설정한 Offset간격으로 지정한 수만큼 복제하는 기능
+ *	3. Actor의 SRT(Scale, Rotate, Transform)을 조작하는 기능
  *  UEditorUtilityWidget 상속을 받음
  */
 UENUM(BlueprintType)
@@ -14,6 +17,33 @@ enum class E_DuplicationAxis : uint8
 	EDA_YAxis UMETA(DisplayName = "Y Axis"),
 	EDA_ZAxis UMETA(DisplayName = "Z Axis"),
 	EDA_MAX UMETA(DisplayName = "Default Max")
+};
+
+USTRUCT(BlueprintType)
+struct FRandomActorRotation
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bRandomizeRotYaw = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "bRandomizeRotYaw")) // bRandomizeRotYaw == true일 때만 적용
+	float RotYawMin = -45.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "bRandomizeRotYaw"))
+	float RotYawMax = 45.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bRandomizeRotPitch = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "bRandomizeRotPitch"))
+	float RotPitchMin = -45.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "bRandomizeRotPitch"))
+	float RotPitchMax = 45.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bRandomizeRotRoll = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "bRandomizeRotRoll"))
+	float RotRollMin = -45.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "bRandomizeRotRoll"))
+	float RotRollMax = 45.f;
 };
 
 UCLASS()
@@ -43,6 +73,17 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActorBatchDuplication")
 	float OffsetDist = 300.f; // 복제 시 Actor 간 간격
+
+#pragma endregion
+
+//** Actor를 랜덤으로 Transform
+#pragma region RandomizeActorTransform
+
+	UFUNCTION(BlueprintCallable)
+	void RandomizeActorTransform(); // Actor를 랜덤으로 Transform
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RandomizeActorTransform")
+	FRandomActorRotation RandomActorRotation;
 
 #pragma endregion
 
