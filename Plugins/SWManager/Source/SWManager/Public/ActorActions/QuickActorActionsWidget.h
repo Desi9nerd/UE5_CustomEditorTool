@@ -52,12 +52,16 @@ class SWMANAGER_API UQuickActorActionsWidget : public UEditorUtilityWidget
 	GENERATED_BODY()
 
 public:
+#pragma region ActorBatchSelection
+
 	UFUNCTION(BlueprintCallable) // WBP의 Graph에 노출시켜 버튼 클릭 시 실행되도록함
 	void SelectAllActorsWithSimilarName(); // 비슷한 이름의 모든 Actor를 선택
 
 	// "ActorBatchSelection"를 WBP의 ActorBatchSelectionDetailsView에 연결
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActorBatchSelection")
 	TEnumAsByte<ESearchCase::Type> SearchCase = ESearchCase::IgnoreCase;
+
+#pragma endregion
 
 //** Actor 복제. WBP의 ActorBatchDuplicationDetailsView/Button에 아래변수 연결
 #pragma region ActorBatchDuplication 
