@@ -51,6 +51,76 @@ void UQuickActorActionsWidget::SelectAllActorsWithSimilarName()
 	}
 }
 
+void UQuickActorActionsWidget::DuplicateActors() // Actor 복제
+{
+	if (false == GetEditorActorSubsystem()) return;
+
+	TArray<AActor*> SelectedActors = EditorActorSubsystem->GetSelectedLevelActors(); // 선택된 Actor들을 담는 변수
+	uint32 Counter = 0; // 복제된 Actor 수 기록할 변수
+
+	if (SelectedActors.Num() == 0)
+	{
+		DebugHeader::ShowNotifyInfo(TEXT("선택된 Actor가 없습니다."));
+		return;
+	}
+
+	if (NumberOfDuplicates <= 0 || OffsetDist == 0)
+	{
+		DebugHeader::ShowNotifyInfo(TEXT("'복제를 희망하는 수'와 '복제 간격'을 올바르게 기입해주세요."));
+		return;
+	}
+
+	for (AActor* SelectedActor : SelectedActors) // 선택된 Actor들을 for문 돌아 복제
+	{
+		if (false == IsValid(SelectedActor)) continue; // 선택된 Actor가 없으면 continue
+
+		for (int32 i = 0; i < NumberOfDuplicates; i++) // NumberOfDuplicates 수 만큼 복제
+		{
+			//** Actor 복제
+			AActor* DuplicatedActor = EditorActorSubsystem->DuplicateActor(SelectedActor, SelectedActor->GetWorld()); 
+
+			if (false == IsValid(DuplicatedActor)) continue;
+
+			//** 복제 후 Offset 이동
+			const float DuplicationOffsetDist = (i + 1) * OffsetDist;
+
+			switch (AxisForDuplication)
+			{
+			case E_DuplicationAxis::EDA_XAxis:
+
+				DuplicatedActor->AddActorWorldOffset(FVector(DuplicationOffsetDist, 0.f, 0.f));
+				break;
+
+			case E_DuplicationAxis::EDA_YAxis:
+
+				DuplicatedActor->AddActorWorldOffset(FVector(0.f, DuplicationOffsetDist, 0.f));
+				break;
+
+			case E_DuplicationAxis::EDA_ZAxis:
+
+				DuplicatedActor->AddActorWorldOffset(FVector(0.f, 0.f, DuplicationOffsetDist));
+				break;
+
+			case E_DuplicationAxis::EDA_MAX:
+				break;
+
+			default:
+				break;
+			}
+
+			//** 복제된 Actor들 선택
+			EditorActorSubsystem->SetActorSelectionState(DuplicatedActor, true);
+			Counter++; // 복제된 Actor 수 기록
+		}
+	}
+
+	if (Counter > 0)
+	{
+		DebugHeader::ShowNotifyInfo(TEXT("총 ") +
+			FString::FromInt(Counter) + TEXT(" 개의 Actor가 성공적으로 복제되었습니다."));
+	}
+}
+
 bool UQuickActorActionsWidget::GetEditorActorSubsystem()
 {
 	if (false == IsValid(EditorActorSubsystem))
