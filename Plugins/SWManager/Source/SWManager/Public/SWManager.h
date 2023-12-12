@@ -39,6 +39,7 @@ private:
 
 #pragma endregion
 
+// 선택한 Actor들을 Lock/Unlock 하기
 #pragma region LevelEditorMenuExtension
 
 	void InitLevelEditorExtention(); // LevelEditor MenuExtention에 CustomLevelEditorMenuExtender 등록 
@@ -49,6 +50,15 @@ private:
 
 	void OnLockActorSelectionButtonClicked(); // Lock 걸기
 	void OnUnlockActorSelectionButtonClicked(); // Unlock 하기
+
+#pragma endregion
+
+// Actor가 선택되었을때 일어나는 Delegate Event
+#pragma region SelectionLock
+
+	void InitCustomSelectionEvent(); // Actor가 선택되었을때 Delegate Event로 함수호출
+	
+	void OnActorSelected(UObject* SelectedObject);
 
 #pragma endregion
 

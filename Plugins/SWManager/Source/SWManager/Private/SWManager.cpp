@@ -8,6 +8,7 @@
 #include "SlateWidgets/AdvanceDeletionWidget.h"
 #include "CustomStyle/SWManagerStyle.h"
 #include "LevelEditor.h" //
+#include "Engine/Selection.h" // GEditor->GetSelectedActors();에 사용
 
 #define LOCTEXT_NAMESPACE "FSWManagerModule"
 
@@ -23,6 +24,8 @@ void FSWManagerModule::StartupModule()
 	RegisterAdvanceDeletionTab(); // Tab 스폰 시키기
 
 	InitLevelEditorExtention();
+
+	InitCustomSelectionEvent();
 }
 
 #pragma region ContentBrowserMenuExtention
@@ -428,6 +431,25 @@ void FSWManagerModule::OnUnlockActorSelectionButtonClicked() // Unlock 하기
 
 #pragma endregion
 
+#pragma region SelectionLock
+
+void FSWManagerModule::InitCustomSelectionEvent() // Actor가 선택되었을때 Delegate Event로 함수호출
+{
+	TObjectPtr<USelection> UserSelection = GEditor->GetSelectedActors(); // #include "Engine/Selection.h" 필요
+
+	//** Custom Binding: Actor가 선택되는 이벤트가 발생하면 OnActiorSelected()함수 호출
+	UserSelection->SelectObjectEvent.AddRaw(this, &FSWManagerModule::OnActorSelected);
+}
+
+void FSWManagerModule::OnActorSelected(UObject* SelectedObject)
+{
+	if (TObjectPtr<AActor> SelectedActor = Cast<AActor>(SelectedObject)) // 선택한 Object가 Actor라면
+	{
+		DebugHeader::Print(SelectedActor->GetActorLabel(), FColor::Cyan); // 선택한 Actor 이름을 디버깅 띄움
+	}
+}
+
+#pragma endregion
 
 void FSWManagerModule::ShutdownModule()
 {
