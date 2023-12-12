@@ -407,15 +407,15 @@ void FSWManagerModule::AddLevelEditorMenuEntry(FMenuBuilder& MenuBuilder) // OnL
 	(
 		FText::FromString(TEXT("선택한 Actor 모두 Lock 걸기")),
 		FText::FromString(TEXT("Actor가 선택되는 것을 방지한다.")),
-		FSlateIcon(),
+		FSlateIcon(FSWManagerStyle::GetStyleSetName(), "LevelEditor.LockSelection"), // "LevelEditor.LockSelection"이름의 Style 적용
 		FExecuteAction::CreateRaw(this, &FSWManagerModule::OnLockActorSelectionButtonClicked)
 	);
 
 	MenuBuilder.AddMenuEntry
 	(
 		FText::FromString(TEXT("선택한 Actor 모두 Unlock 하기")),
-		FText::FromString(TEXT("Remove the selection constraint on all actor")),
-		FSlateIcon(),
+		FText::FromString(TEXT("Lock된 Actor들 잠금 해제")),
+		FSlateIcon(FSWManagerStyle::GetStyleSetName(), "LevelEditor.UnlockSelection"),// "LevelEditor.UnlockSelection"이름의 Style 적용
 		FExecuteAction::CreateRaw(this, &FSWManagerModule::OnUnlockActorSelectionButtonClicked)
 	);
 }
