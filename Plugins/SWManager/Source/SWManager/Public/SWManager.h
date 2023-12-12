@@ -48,8 +48,8 @@ private:
 
 	void AddLevelEditorMenuEntry(class FMenuBuilder& MenuBuilder); // OnLockActorSelectionButtonClicked()와 OnUnlockActorSelectionButtonClicked() 추가
 
-	void OnLockActorSelectionButtonClicked(); // Lock 걸기
-	void OnUnlockActorSelectionButtonClicked(); // Unlock 하기
+	void OnLockActorSelectionButtonClicked(); // Lock 걸기. void LockActorSelection()호출
+	void OnUnlockActorSelectionButtonClicked(); // Unlock 하기. void UnlockActorSelection()호출
 
 #pragma endregion
 
@@ -58,9 +58,16 @@ private:
 
 	void InitCustomSelectionEvent(); // Actor가 선택되었을때 Delegate Event로 함수호출
 	
-	void OnActorSelected(UObject* SelectedObject);
+	void OnActorSelected(UObject* SelectedObject); // Delegate Event Callback함수
+
+	void LockActorSelection(TObjectPtr<AActor> ActorToProcess); 
+	void UnlockActorSelection(TObjectPtr<AActor> ActorToProcess);
+	bool CheckIsActorSelectionLocked(TObjectPtr<AActor> ActorToProcess); // 선택한 Actor에 "Locked" tag가 있으면 true, 없으면 false
 
 #pragma endregion
+	TWeakObjectPtr<class UEditorActorSubsystem> WeakEditorActorSubsystem;
+	bool GetEditorActorSubsystem(); 
+
 
 public:
 #pragma region ProccessDataForAdvanceDeletionTab

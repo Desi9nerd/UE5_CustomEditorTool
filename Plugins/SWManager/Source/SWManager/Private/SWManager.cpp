@@ -9,6 +9,7 @@
 #include "CustomStyle/SWManagerStyle.h"
 #include "LevelEditor.h" //
 #include "Engine/Selection.h" // GEditor->GetSelectedActors();에 사용
+#include "Subsystems/EditorActorSubsystem.h"
 
 #define LOCTEXT_NAMESPACE "FSWManagerModule"
 
@@ -421,12 +422,67 @@ void FSWManagerModule::AddLevelEditorMenuEntry(FMenuBuilder& MenuBuilder) // OnL
 
 void FSWManagerModule::OnLockActorSelectionButtonClicked() // Lock 걸기
 {
-	DebugHeader::Print(TEXT("Locked"), FColor::Cyan);
+	if (false == GetEditorActorSubsystem()) return;
+
+	TArray<AActor*> SelectedActors = WeakEditorActorSubsystem->GetSelectedLevelActors();
+
+	if (SelectedActors.Num() == 0)
+	{
+		DebugHeader::ShowNotifyInfo(TEXT("선택한 Actor가 없습니다."));
+		return;
+	}
+
+	FString CurrentLockedActorNames = TEXT("선택한 Actor들 Lock 걸기: ");
+
+	for (AActor* SelectedActor : SelectedActors)
+	{
+		if (false == IsValid(SelectedActor)) continue;
+
+		LockActorSelection(SelectedActor);
+
+		WeakEditorActorSubsystem->SetActorSelectionState(SelectedActor, false); // SelectedActor 선택 해제
+
+		CurrentLockedActorNames.Append(TEXT("\n"));
+		CurrentLockedActorNames.Append(SelectedActor->GetActorLabel()); // SelectedActor 이름 추가
+	}
+
+	DebugHeader::ShowNotifyInfo(CurrentLockedActorNames); // 에디터 우측하단에 Lock걸 Actor들의 이름들을 디버깅 메시지로 띄우기
 }
 
 void FSWManagerModule::OnUnlockActorSelectionButtonClicked() // Unlock 하기
 {
-	DebugHeader::Print(TEXT("Unlocked"), FColor::Red);
+	if (false == GetEditorActorSubsystem()) return;
+
+	TArray<AActor*> AllActorsInLevel = WeakEditorActorSubsystem->GetAllLevelActors(); // Level에 배치된 모든 Actor를 담음
+	TArray<AActor*> AllLockedActors; // Lock된 Actors 모두 담을 TArray배열변수
+
+	//** Level에 배치된 모든 Actor들 중 Lock된 Actor들을 AllLockedActors에 담음
+	for (AActor* ActorInLevel : AllActorsInLevel)
+	{
+		if (false == IsValid(ActorInLevel)) continue;
+
+		if (CheckIsActorSelectionLocked(ActorInLevel)) // ActorInLevel이 Lock된 Actor라면
+		{
+			AllLockedActors.Add(ActorInLevel); // Lock된 ActorInLevel 모두 담음
+		}
+	}
+
+	if (AllLockedActors.Num() == 0)
+	{
+		DebugHeader::ShowNotifyInfo(TEXT("현재 선택된 Actor들 중 Lock된게 없습니다."));
+	}
+
+	FString UnlockedActorNames = TEXT("선택한 Actor들 Unlock 하기: ");
+
+	for (AActor* LockedActor : AllLockedActors)
+	{
+		UnlockActorSelection(LockedActor);
+
+		UnlockedActorNames.Append(TEXT("\n"));
+		UnlockedActorNames.Append(LockedActor->GetActorLabel()); // LockedActor 이름 추가
+	}
+
+	DebugHeader::ShowNotifyInfo(UnlockedActorNames); // 에디터 우측하단에 UnLock될 Actor들의 이름들을 디버깅 메시지로 띄우기
 }
 
 #pragma endregion
@@ -443,13 +499,58 @@ void FSWManagerModule::InitCustomSelectionEvent() // Actor가 선택되었을때
 
 void FSWManagerModule::OnActorSelected(UObject* SelectedObject)
 {
+	if (false == GetEditorActorSubsystem()) return;
+
 	if (TObjectPtr<AActor> SelectedActor = Cast<AActor>(SelectedObject)) // 선택한 Object가 Actor라면
 	{
-		DebugHeader::Print(SelectedActor->GetActorLabel(), FColor::Cyan); // 선택한 Actor 이름을 디버깅 띄움
+		if (CheckIsActorSelectionLocked(SelectedActor)) // SelectedActor에 "Locked" tag가 있다면
+		{			
+			WeakEditorActorSubsystem->SetActorSelectionState(SelectedActor, false); // SelectedActor 선택 해제
+		}
 	}
 }
 
+void FSWManagerModule::LockActorSelection(TObjectPtr<AActor> ActorToProcess)
+{
+	if (false == IsValid(ActorToProcess)) return;
+
+	if (false == ActorToProcess->ActorHasTag(FName("Locked"))) // "Locked" tag가 없다면
+	{
+		ActorToProcess->Tags.Add(FName("Locked")); // "Locked" tag 추가
+	}
+}
+
+void FSWManagerModule::UnlockActorSelection(TObjectPtr<AActor> ActorToProcess)
+{
+	if (false == IsValid(ActorToProcess)) return;
+
+	if (ActorToProcess->ActorHasTag(FName("Locked"))) // "Locked" tag가 있다면
+	{
+		ActorToProcess->Tags.Remove(FName("Locked")); // "Locked" tag 제거
+	}
+}
+
+// 매개변수로 들어오는 ActorToProcess에 "Locked" tag가 있으면 true, 없으면 false
+bool FSWManagerModule::CheckIsActorSelectionLocked(TObjectPtr<AActor> ActorToProcess) 
+{
+	if (false == IsValid(ActorToProcess)) return false;
+
+	return ActorToProcess->ActorHasTag(FName("Locked"));
+}
+
 #pragma endregion
+
+bool FSWManagerModule::GetEditorActorSubsystem() 
+{
+	// WeakEditorActorSubsystem변수에 UEditorActorSubsystem을 담고 true리턴
+	if (false == WeakEditorActorSubsystem.IsValid())
+	{
+		WeakEditorActorSubsystem = GEditor->GetEditorSubsystem<UEditorActorSubsystem>(); // #include "Subsystems/EditorActorSubsystem.h" 필요
+	}
+
+	return WeakEditorActorSubsystem.IsValid();
+}
+
 
 void FSWManagerModule::ShutdownModule()
 {
