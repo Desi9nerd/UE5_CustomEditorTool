@@ -5,7 +5,7 @@
 #include "QuickMaterialCreationWidget.generated.h"
 
 /** Material 관련 EditorUtilityWidget
- *  선택한 Texture를 사용해서 Material 생성
+ *  선택한 Texture를 사용해서 Material 생성. Material Instance 생성
  *	bCustomMaterailName==true면 이름을 지을 수 있고, false면 Texture이름에 M_ 접두어를 붙인 이름으로 생성 
  */
 
