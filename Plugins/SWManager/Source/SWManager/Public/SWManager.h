@@ -39,6 +39,19 @@ private:
 
 #pragma endregion
 
+#pragma region LevelEditorMenuExtension
+
+	void InitLevelEditorExtention(); // LevelEditor MenuExtention에 CustomLevelEditorMenuExtender 등록 
+
+	TSharedRef<FExtender> CustomLevelEditorMenuExtender(const TSharedRef<FUICommandList> UICommandList, const TArray<AActor*> SelectedActors); // AddLevelEditorMenuEntry() 추가
+
+	void AddLevelEditorMenuEntry(class FMenuBuilder& MenuBuilder); // OnLockActorSelectionButtonClicked()와 OnUnlockActorSelectionButtonClicked() 추가
+
+	void OnLockActorSelectionButtonClicked(); // Lock 걸기
+	void OnUnlockActorSelectionButtonClicked(); // Unlock 하기
+
+#pragma endregion
+
 public:
 #pragma region ProccessDataForAdvanceDeletionTab
 

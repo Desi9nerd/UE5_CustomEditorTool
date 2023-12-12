@@ -7,6 +7,7 @@
 #include "AssetToolsModule.h"
 #include "SlateWidgets/AdvanceDeletionWidget.h"
 #include "CustomStyle/SWManagerStyle.h"
+#include "LevelEditor.h" //
 
 #define LOCTEXT_NAMESPACE "FSWManagerModule"
 
@@ -20,6 +21,8 @@ void FSWManagerModule::StartupModule()
 	InitCBMenuExtention(); // Content Browser Menu Extention Init
 
 	RegisterAdvanceDeletionTab(); // Tab 스폰 시키기
+
+	InitLevelEditorExtention();
 }
 
 #pragma region ContentBrowserMenuExtention
@@ -364,6 +367,67 @@ void FSWManagerModule::SyncCBToClickedAssetForAssetList(const FString& AssetPath
 }
 
 #pragma endregion
+
+#pragma region LevelEditorMenuExtension
+
+void FSWManagerModule::InitLevelEditorExtention() // Actor의 MenuExtender에 CustomLevelEditorMenuExtender 등록
+{
+	FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>(TEXT("LevelEditor")); // LevelEditorModule
+
+	TArray<FLevelEditorModule::FLevelViewportMenuExtender_SelectedActors>& LevelEditorMenuExtenders = LevelEditorModule.GetAllLevelViewportContextMenuExtenders(); // Actor를 우클릭할 때 나타나는 MenuExtender 모두 담기
+
+	LevelEditorMenuExtenders.Add(FLevelEditorModule::FLevelViewportMenuExtender_SelectedActors::CreateRaw(this, &FSWManagerModule::CustomLevelEditorMenuExtender)); // MenuExtender에 CustomLevelEditorMenuExtender를 추가
+}
+
+TSharedRef<FExtender> FSWManagerModule::CustomLevelEditorMenuExtender(const TSharedRef<FUICommandList> UICommandList, const TArray<AActor*> SelectedActors)
+{
+	TSharedRef<FExtender> MenuExtender = MakeShareable(new FExtender()); // Extender 생성
+
+	if (SelectedActors.Num() > 0)
+	{
+		// ActorOptions 위치 전에 AddLevelEditorMenuEntry를 추가
+		MenuExtender->AddMenuExtension(
+			FName("ActorOptions"),
+			EExtensionHook::Before,
+			UICommandList,
+			FMenuExtensionDelegate::CreateRaw(this, &FSWManagerModule::AddLevelEditorMenuEntry)
+		);
+	}
+
+	return MenuExtender;
+}
+
+void FSWManagerModule::AddLevelEditorMenuEntry(FMenuBuilder& MenuBuilder) // OnLockActorSelectionButtonClicked()와 OnUnlockActorSelectionButtonClicked() 추가
+{
+	MenuBuilder.AddMenuEntry
+	(
+		FText::FromString(TEXT("선택한 Actor 모두 Lock 걸기")),
+		FText::FromString(TEXT("Actor가 선택되는 것을 방지한다.")),
+		FSlateIcon(),
+		FExecuteAction::CreateRaw(this, &FSWManagerModule::OnLockActorSelectionButtonClicked)
+	);
+
+	MenuBuilder.AddMenuEntry
+	(
+		FText::FromString(TEXT("선택한 Actor 모두 Unlock 하기")),
+		FText::FromString(TEXT("Remove the selection constraint on all actor")),
+		FSlateIcon(),
+		FExecuteAction::CreateRaw(this, &FSWManagerModule::OnUnlockActorSelectionButtonClicked)
+	);
+}
+
+void FSWManagerModule::OnLockActorSelectionButtonClicked() // Lock 걸기
+{
+	DebugHeader::Print(TEXT("Locked"), FColor::Cyan);
+}
+
+void FSWManagerModule::OnUnlockActorSelectionButtonClicked() // Unlock 하기
+{
+	DebugHeader::Print(TEXT("Unlocked"), FColor::Red);
+}
+
+#pragma endregion
+
 
 void FSWManagerModule::ShutdownModule()
 {
