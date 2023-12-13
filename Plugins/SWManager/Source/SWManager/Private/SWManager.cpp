@@ -26,6 +26,7 @@ void FSWManagerModule::StartupModule()
 	RegisterAdvanceDeletionTab(); // Tab 스폰 시키기
 
 	FSWManagerUICommands::Register(); // SWManagerUICommands클래스 Register. 단축키 등록하기
+	InitCustomUICommands(); 
 
 	InitLevelEditorExtention();
 
@@ -381,6 +382,9 @@ void FSWManagerModule::InitLevelEditorExtention() // Actor의 MenuExtender에 Cu
 {
 	FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>(TEXT("LevelEditor")); // LevelEditorModule
 
+	TSharedRef<FUICommandList> ExistingLevelCommands = LevelEditorModule.GetGlobalLevelEditorActions();
+	ExistingLevelCommands->Append(CustomUICommands.ToSharedRef()); // FUICommandList에 CustomUICommands 추가
+
 	TArray<FLevelEditorModule::FLevelViewportMenuExtender_SelectedActors>& LevelEditorMenuExtenders = LevelEditorModule.GetAllLevelViewportContextMenuExtenders(); // Actor를 우클릭할 때 나타나는 MenuExtender 모두 담기
 
 	LevelEditorMenuExtenders.Add(FLevelEditorModule::FLevelViewportMenuExtender_SelectedActors::CreateRaw(this, &FSWManagerModule::CustomLevelEditorMenuExtender)); // MenuExtender에 CustomLevelEditorMenuExtender를 추가
@@ -441,7 +445,7 @@ void FSWManagerModule::OnLockActorSelectionButtonClicked() // Lock 걸기
 	{
 		if (false == IsValid(SelectedActor)) continue;
 
-		LockActorSelection(SelectedActor);
+		LockActorSelection(SelectedActor); 
 
 		WeakEditorActorSubsystem->SetActorSelectionState(SelectedActor, false); // SelectedActor 선택 해제
 
@@ -539,6 +543,35 @@ bool FSWManagerModule::CheckIsActorSelectionLocked(TObjectPtr<AActor> ActorToPro
 	if (false == IsValid(ActorToProcess)) return false;
 
 	return ActorToProcess->ActorHasTag(FName("Locked"));
+}
+
+#pragma endregion
+
+#pragma region CustomEditorUICommands
+
+void FSWManagerModule::InitCustomUICommands()
+{
+	CustomUICommands = MakeShareable(new FUICommandList());
+
+	CustomUICommands->MapAction(
+		FSWManagerUICommands::Get().LockActorSelection,
+		FExecuteAction::CreateRaw(this, &FSWManagerModule::OnSelectionLockHotKeyPressed) // "LockActorSelection"라는 command ID에 OnSelectionLockHotKeyPressed함수 binding. 
+	);
+
+	CustomUICommands->MapAction(
+		FSWManagerUICommands::Get().UnlockActorSelection,
+		FExecuteAction::CreateRaw(this, &FSWManagerModule::OnUnlockActorSelectionHotKeyPressed) // 함수 binding
+	);
+}
+
+void FSWManagerModule::OnSelectionLockHotKeyPressed()
+{
+	OnLockActorSelectionButtonClicked(); // Lock 걸기. void LockActorSelection()호출
+}
+
+void FSWManagerModule::OnUnlockActorSelectionHotKeyPressed()
+{
+	OnUnlockActorSelectionButtonClicked(); // Unlock 하기. void UnlockActorSelection()호출
 }
 
 #pragma endregion

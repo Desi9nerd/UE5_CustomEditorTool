@@ -65,6 +65,19 @@ private:
 	bool CheckIsActorSelectionLocked(TObjectPtr<AActor> ActorToProcess); // 선택한 Actor에 "Locked" tag가 있으면 true, 없으면 false
 
 #pragma endregion
+
+// 단축키 눌렸을때 Lock/Unlock 실행
+#pragma region CustomEditorUICommands
+
+	TSharedPtr<class FUICommandList> CustomUICommands; // 단축키
+
+	void InitCustomUICommands();
+
+	void OnSelectionLockHotKeyPressed(); // Lock 단축키 눌림
+	void OnUnlockActorSelectionHotKeyPressed(); // Unlock 단축키 눌림
+
+#pragma endregion
+
 	TWeakObjectPtr<class UEditorActorSubsystem> WeakEditorActorSubsystem;
 	bool GetEditorActorSubsystem(); 
 
