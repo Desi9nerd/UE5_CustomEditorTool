@@ -10,6 +10,7 @@
 #include "LevelEditor.h" //
 #include "Engine/Selection.h" // GEditor->GetSelectedActors();에 사용
 #include "Subsystems/EditorActorSubsystem.h"
+#include "CustomUICommands/SWManagerUICommands.h"
 
 #define LOCTEXT_NAMESPACE "FSWManagerModule"
 
@@ -23,6 +24,8 @@ void FSWManagerModule::StartupModule()
 	InitCBMenuExtention(); // Content Browser Menu Extention Init
 
 	RegisterAdvanceDeletionTab(); // Tab 스폰 시키기
+
+	FSWManagerUICommands::Register(); // SWManagerUICommands클래스 Register. 단축키 등록하기
 
 	InitLevelEditorExtention();
 
