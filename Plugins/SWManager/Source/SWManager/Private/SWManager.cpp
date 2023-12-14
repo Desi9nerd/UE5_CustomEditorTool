@@ -602,6 +602,26 @@ void FSWManagerModule::OnUnlockActorSelectionHotKeyPressed()
 
 #pragma endregion
 
+void FSWManagerModule::ProcessLockingForOutliner(TObjectPtr<AActor> ActorToProcess, bool bShouldLock)
+{
+	if (false == GetEditorActorSubsystem()) return;
+
+	if (bShouldLock)
+	{
+		LockActorSelection(ActorToProcess);
+
+		WeakEditorActorSubsystem->SetActorSelectionState(ActorToProcess, false);
+
+		DebugHeader::ShowNotifyInfo(TEXT("선택 LOCK:\n") + ActorToProcess->GetActorLabel());
+	}
+	else
+	{
+		UnlockActorSelection(ActorToProcess);
+
+		DebugHeader::ShowNotifyInfo(TEXT("선택 UNLOCK:\n") + ActorToProcess->GetActorLabel());
+	}
+}
+
 bool FSWManagerModule::GetEditorActorSubsystem() 
 {
 	// WeakEditorActorSubsystem변수에 UEditorActorSubsystem을 담고 true리턴

@@ -71,7 +71,6 @@ private:
 
 	void LockActorSelection(TObjectPtr<AActor> ActorToProcess); 
 	void UnlockActorSelection(TObjectPtr<AActor> ActorToProcess);
-	bool CheckIsActorSelectionLocked(TObjectPtr<AActor> ActorToProcess); // 선택한 Actor에 "Locked" tag가 있으면 true, 없으면 false
 
 #pragma endregion
 
@@ -102,4 +101,6 @@ public:
 
 #pragma endregion
 
+	bool CheckIsActorSelectionLocked(TObjectPtr<AActor> ActorToProcess); // 선택한 Actor에 "Locked" tag가 있으면 true, 없으면 false
+	void ProcessLockingForOutliner(TObjectPtr<AActor> ActorToProcess, bool bShouldLock);
 };
