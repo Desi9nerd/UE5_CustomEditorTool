@@ -25,7 +25,7 @@ public class SWManager : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core", "Blutility", "EditorScriptingUtilities", "UMG", "Niagara", "UnrealEd", "AssetTools", "ContentBrowser", "InputCore", "Projects"
+				"Core", "Blutility", "EditorScriptingUtilities", "UMG", "Niagara", "UnrealEd", "AssetTools", "ContentBrowser", "InputCore", "Projects", "SceneOutliner"
             }
 			);
 			
