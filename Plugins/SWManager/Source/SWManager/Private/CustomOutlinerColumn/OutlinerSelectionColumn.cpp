@@ -20,7 +20,13 @@ SHeaderRow::FColumn::FArguments FOutlinerSelectionColumn::ConstructHeaderRowColu
 	return ConstructedHeaderRow;
 }
 
-const TSharedRef<SWidget> FOutlinerSelectionColumn::ConstructRowWidget(FSceneOutlinerTreeItemRef TreeItem, const STableRow<FSceneOutlinerTreeItemPtr>& Row)
+const TSharedRef<SWidget> FOutlinerSelectionColumn::ConstructRowWidget(FSceneOutlinerTreeItemRef TreeItem, const STableRow<FSceneOutlinerTreeItemPtr>& Row) // 각 Row Widget에 CheckBox 생성
 {
-	return SNullWidget::NullWidget; // TSharedRef<SWidget>의 nullptr버젼
+	TSharedRef<SCheckBox> ConstructedRowWidgetCheckBox =
+		SNew(SCheckBox)
+		.Visibility(EVisibility::Visible)
+		.HAlign(HAlign_Center)
+		.IsChecked(ECheckBoxState::Unchecked);
+
+	return ConstructedRowWidgetCheckBox;
 }
