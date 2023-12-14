@@ -17,7 +17,7 @@ void FSWManagerUICommands::RegisterCommands() // 단축키 등록하기
 		"선택한 액터 UNLOCK",
 		"Lock된 Actor들 잠금 해제",
 		EUserInterfaceActionType::Button, // 버튼을 누르면 trigger
-		FInputChord(EKeys::W, EModifierKey::Alt | EModifierKey::Shift) // 'W + Alt/Shift'버튼
+		FInputChord(EKeys::W, EModifierKey::Alt | EModifierKey::Shift) // 'W + Alt + Shift'버튼
 	);
 }
 
