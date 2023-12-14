@@ -250,12 +250,12 @@ void FSWManagerModule::FixUpRedirectors()
 void FSWManagerModule::RegisterAdvanceDeletionTab()
 {
 	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(FName("AdvanceDeletion"), // Tab ID: "AdvanceDeletion"
-		FOnSpawnTab::CreateRaw(this, &FSWManagerModule::OnSpawnAdvanceDeltionTab))
+		FOnSpawnTab::CreateRaw(this, &FSWManagerModule::OnSpawnAdvanceDeletionTab))
 		.SetDisplayName(FText::FromString(TEXT("제거 마법사")))
 		.SetIcon(FSlateIcon(FSWManagerStyle::GetStyleSetName(), "ContentBrowser.AdvanceDeletion"));
 }
 
-TSharedRef<SDockTab> FSWManagerModule::OnSpawnAdvanceDeltionTab(const FSpawnTabArgs& SpawnTabArgs)
+TSharedRef<SDockTab> FSWManagerModule::OnSpawnAdvanceDeletionTab(const FSpawnTabArgs& SpawnTabArgs)
 {
 	if (FolderPathsSelected.Num() == 0) // 선택한게 없을때 예외처리
 		return SNew(SDockTab).TabRole(ETabRole::NomadTab);
