@@ -523,6 +523,13 @@ TSharedRef<ISceneOutlinerColumn> FSWManagerModule::OnCreateSelectionLockColumn(I
 	return MakeShareable(new FOutlinerSelectionColumn(SceneOutliner));
 }
 
+void FSWManagerModule::UnRegisterSceneOutlinerColumnExtension()
+{
+	FSceneOutlinerModule& SceneOutlinerModule = FModuleManager::LoadModuleChecked<FSceneOutlinerModule>(TEXT("SceneOutliner"));
+
+	SceneOutlinerModule.UnRegisterColumnType<FOutlinerSelectionColumn>();
+}
+
 #pragma endregion
 
 #pragma region SelectionLock
@@ -660,6 +667,8 @@ void FSWManagerModule::ShutdownModule()
 	FSWManagerStyle::ShutDown(); // Custom Icon Shutdown
 
 	FSWManagerUICommands::Unregister(); // 단축키 등록을 위해 Register한것 Unregister
+
+	void UnRegisterSceneOutlinerColumnExtension();
 }
 
 #undef LOCTEXT_NAMESPACE

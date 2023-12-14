@@ -60,6 +60,8 @@ private:
 
 	TSharedRef<class ISceneOutlinerColumn> OnCreateSelectionLockColumn(class ISceneOutliner& SceneOutliner);
 
+	void UnRegisterSceneOutlinerColumnExtension(); // Module이 끝났을때 Unregister
+
 #pragma endregion
 
 // Actor가 선택되었을때 일어나는 Delegate Event
