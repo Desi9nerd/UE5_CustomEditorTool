@@ -457,6 +457,8 @@ void FSWManagerModule::OnLockActorSelectionButtonClicked() // Lock 걸기
 		CurrentLockedActorNames.Append(SelectedActor->GetActorLabel()); // SelectedActor 이름 추가
 	}
 
+	RefreshSceneOutliner(); // SceneOutliner 새로고침
+
 	DebugHeader::ShowNotifyInfo(CurrentLockedActorNames); // 에디터 우측하단에 Lock걸 Actor들의 이름들을 디버깅 메시지로 띄우기
 }
 
@@ -493,6 +495,8 @@ void FSWManagerModule::OnUnlockActorSelectionButtonClicked() // Unlock 하기
 		UnlockedActorNames.Append(TEXT("\n"));
 		UnlockedActorNames.Append(LockedActor->GetActorLabel()); // LockedActor 이름 추가
 	}
+
+	RefreshSceneOutliner(); // SceneOutliner 새로고침
 
 	DebugHeader::ShowNotifyInfo(UnlockedActorNames); // 에디터 우측하단에 UnLock될 Actor들의 이름들을 디버깅 메시지로 띄우기
 }
@@ -570,6 +574,18 @@ bool FSWManagerModule::CheckIsActorSelectionLocked(TObjectPtr<AActor> ActorToPro
 	if (false == IsValid(ActorToProcess)) return false;
 
 	return ActorToProcess->ActorHasTag(FName("Locked"));
+}
+
+void FSWManagerModule::RefreshSceneOutliner()
+{
+	FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>(TEXT("LevelEditor"));
+
+	TSharedPtr<ISceneOutliner> SceneOutliner = LevelEditorModule.GetFirstLevelEditor()->GetSceneOutliner();
+
+	if (SceneOutliner.IsValid())
+	{
+		SceneOutliner->FullRefresh();
+	}
 }
 
 #pragma endregion

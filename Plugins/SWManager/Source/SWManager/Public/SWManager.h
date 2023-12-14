@@ -72,6 +72,8 @@ private:
 	void LockActorSelection(TObjectPtr<AActor> ActorToProcess); 
 	void UnlockActorSelection(TObjectPtr<AActor> ActorToProcess);
 
+	void RefreshSceneOutliner(); // ContentBrowserMenuExtension과 World Outliner에 표시되는 Lock/Unlock 기능 동기화
+
 #pragma endregion
 
 // 단축키 눌렸을때 Lock/Unlock 실행
