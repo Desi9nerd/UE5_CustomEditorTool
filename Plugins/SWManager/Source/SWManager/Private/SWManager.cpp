@@ -257,13 +257,20 @@ void FSWManagerModule::RegisterAdvanceDeletionTab()
 
 TSharedRef<SDockTab> FSWManagerModule::OnSpawnAdvanceDeltionTab(const FSpawnTabArgs& SpawnTabArgs)
 {
-	return
-	SNew(SDockTab).TabRole(ETabRole::NomadTab)
-	[
-		SNew(SAdvanceDeletionTab)
-		.AssetsDataToStore(GetAllAssetDataUnderSelectedFolder()) // 선택한 폴더에 포함된 모든 에셋 불러오기
-		.CurrentSelectedFolder(FolderPathsSelected[0]) // 현재 폴더
-	];
+	if (FolderPathsSelected.Num() == 0) // 선택한게 없을때 예외처리
+		return SNew(SDockTab).TabRole(ETabRole::NomadTab);
+
+	ConstructedDockTab =
+		SNew(SDockTab).TabRole(ETabRole::NomadTab)
+		[
+			SNew(SAdvanceDeletionTab)
+			.AssetsDataToStore(GetAllAssetDataUnderSelectedFolder()) // 선택한 폴더에 포함된 모든 에셋 불러오기
+			.CurrentSelectedFolder(FolderPathsSelected[0]) // 현재 폴더
+		];
+
+	ConstructedDockTab->SetOnTabClosed(SDockTab::FOnTabClosedCallback::CreateRaw(this, &FSWManagerModule::OnAdvanceDeletionTabClosed));
+
+	return ConstructedDockTab.ToSharedRef();
 }
 
 TArray<TSharedPtr<FAssetData>> FSWManagerModule::GetAllAssetDataUnderSelectedFolder()
@@ -294,6 +301,15 @@ TArray<TSharedPtr<FAssetData>> FSWManagerModule::GetAllAssetDataUnderSelectedFol
 	}
 
 	return AvaiableAssetsData; // 유효한 에셋들 리턴
+}
+
+void FSWManagerModule::OnAdvanceDeletionTabClosed(TSharedRef<SDockTab> TabToClose)
+{
+	if (ConstructedDockTab.IsValid())
+	{
+		ConstructedDockTab.Reset();
+		FolderPathsSelected.Empty();
+	}
 }
 
 #pragma endregion

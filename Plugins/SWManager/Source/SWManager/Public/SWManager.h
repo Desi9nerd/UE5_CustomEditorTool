@@ -34,8 +34,11 @@ private:
 	void RegisterAdvanceDeletionTab();
 
 	TSharedRef<SDockTab> OnSpawnAdvanceDeltionTab(const FSpawnTabArgs& SpawnTabArgs); // Tab 스폰
+	TSharedPtr<SDockTab> ConstructedDockTab;
 
 	TArray< TSharedPtr <FAssetData> > GetAllAssetDataUnderSelectedFolder(); // 선택한 폴더에 포함된 모든 에셋 불러오기
+
+	void OnAdvanceDeletionTabClosed(TSharedRef<SDockTab> TabToClose);
 
 #pragma endregion
 
