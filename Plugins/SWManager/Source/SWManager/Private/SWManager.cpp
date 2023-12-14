@@ -481,6 +481,7 @@ void FSWManagerModule::OnUnlockActorSelectionButtonClicked() // Unlock 하기
 	if (AllLockedActors.Num() == 0)
 	{
 		DebugHeader::ShowNotifyInfo(TEXT("현재 선택된 Actor들 중 Lock된게 없습니다."));
+		return;
 	}
 
 	FString UnlockedActorNames = TEXT("선택한 Actor들 Unlock 하기: ");
