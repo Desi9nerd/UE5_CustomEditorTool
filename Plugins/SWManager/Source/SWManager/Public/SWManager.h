@@ -53,6 +53,15 @@ private:
 
 #pragma endregion
 
+// World Outliner의 Column에 노출
+#pragma region SceneOutlinerExtension
+
+	void InitSceneOutlinerColumnExtension();
+
+	TSharedRef<class ISceneOutlinerColumn> OnCreateSelectionLockColumn(class ISceneOutliner& SceneOutliner);
+
+#pragma endregion
+
 // Actor가 선택되었을때 일어나는 Delegate Event
 #pragma region SelectionLock
 

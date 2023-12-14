@@ -11,6 +11,8 @@
 #include "Engine/Selection.h" // GEditor->GetSelectedActors();에 사용
 #include "Subsystems/EditorActorSubsystem.h"
 #include "CustomUICommands/SWManagerUICommands.h"
+#include "SceneOutlinerModule.h"
+#include "CustomOutlinerColumn/OutlinerSelectionColumn.h"
 
 #define LOCTEXT_NAMESPACE "FSWManagerModule"
 
@@ -31,6 +33,8 @@ void FSWManagerModule::StartupModule()
 	InitLevelEditorExtention();
 
 	InitCustomSelectionEvent();
+
+	InitSceneOutlinerColumnExtension(); // World Outliner의 Column에 노출 Init
 }
 
 #pragma region ContentBrowserMenuExtention
@@ -490,6 +494,28 @@ void FSWManagerModule::OnUnlockActorSelectionButtonClicked() // Unlock 하기
 	}
 
 	DebugHeader::ShowNotifyInfo(UnlockedActorNames); // 에디터 우측하단에 UnLock될 Actor들의 이름들을 디버깅 메시지로 띄우기
+}
+
+#pragma endregion
+
+#pragma region SceneOutlinerExtension
+
+void FSWManagerModule::InitSceneOutlinerColumnExtension()
+{
+	FSceneOutlinerModule& SceneOutlinerModule = FModuleManager::LoadModuleChecked<FSceneOutlinerModule>(TEXT("SceneOutliner")); // World Outliner를 로드
+
+	FSceneOutlinerColumnInfo SelectionLockColumnInfo(
+		ESceneOutlinerColumnVisibility::Visible,
+		1, // Custom Column이 삽입될 위치 인덱스
+		FCreateSceneOutlinerColumn::CreateRaw(this, &FSWManagerModule::OnCreateSelectionLockColumn)
+	);
+
+	SceneOutlinerModule.RegisterDefaultColumnType<FOutlinerSelectionLockColumn>(SelectionLockColumnInfo); // SceneOutlinerModule에 SelectionLockColumnInfo를 ColumnType으로 등록
+}
+
+TSharedRef<ISceneOutlinerColumn> FSWManagerModule::OnCreateSelectionLockColumn(ISceneOutliner& SceneOutliner)
+{
+	return MakeShareable(new FOutlinerSelectionLockColumn(SceneOutliner));
 }
 
 #pragma endregion
