@@ -1,6 +1,7 @@
 #include "CustomStyle/SWManagerStyle.h"
 #include "Interfaces/IPluginManager.h"
 #include "Styling/SlateStyleRegistry.h"
+#include "Styling/StyleColors.h"
 
 FName FSWManagerStyle::StyleSetName = FName("SWManagerStyle"); // 이름 설정
 TSharedPtr<FSlateStyleSet> FSWManagerStyle::CreatedSlateStyleSet = nullptr;
@@ -37,6 +38,25 @@ TSharedRef<FSlateStyleSet> FSWManagerStyle::CreateSlateStyleSet()
 
 	CustomStyleSet->Set("LevelEditor.UnlockSelection",
 		new FSlateImageBrush(IconDirectory / "SelectionUnlock.png", Icon16x16));
+
+	// World Outliner에 뜨는 CheckBox(=ToggleButton) 이미지 사용을 위해 FCheckBoxStyle 생성 후 변수에 담음
+	const FCheckBoxStyle SelectionLockToggleButtonStyle = 
+		FCheckBoxStyle()
+		.SetCheckBoxType(ESlateCheckBoxType::ToggleButton)
+		.SetPadding(FMargin(10.f))
+
+		// Uncheck images
+		.SetUncheckedImage(FSlateImageBrush(IconDirectory / "SelectionLock.png", Icon16x16, FStyleColors::White25))
+		.SetUncheckedHoveredImage(FSlateImageBrush(IconDirectory / "SelectionLock.png", Icon16x16, FStyleColors::AccentBlue))
+		.SetUncheckedPressedImage(FSlateImageBrush(IconDirectory / "SelectionLock.png", Icon16x16, FStyleColors::Foreground))
+
+		// Checked images
+		.SetCheckedImage(FSlateImageBrush(IconDirectory / "SelectionLock.png", Icon16x16, FStyleColors::Foreground))
+		.SetCheckedHoveredImage(FSlateImageBrush(IconDirectory / "SelectionLock.png", Icon16x16, FStyleColors::AccentBlack))
+		.SetCheckedPressedImage(FSlateImageBrush(IconDirectory / "SelectionLock.png", Icon16x16, FStyleColors::AccentGray));
+
+	CustomStyleSet->Set("SceneOutliner.SelectionLock", SelectionLockToggleButtonStyle);
+
 
 	return CustomStyleSet;
 }
