@@ -595,6 +595,8 @@ void FSWManagerModule::ShutdownModule()
 	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(FName("AdvanceDeletion")); // Tab ID: "AdvanceDeletion"
 
 	FSWManagerStyle::ShutDown(); // Custom Icon Shutdown
+
+	FSWManagerUICommands::Unregister(); // 단축키 등록을 위해 Register한것 Unregister
 }
 
 #undef LOCTEXT_NAMESPACE
