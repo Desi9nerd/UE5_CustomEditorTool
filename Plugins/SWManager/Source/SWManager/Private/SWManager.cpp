@@ -510,12 +510,12 @@ void FSWManagerModule::InitSceneOutlinerColumnExtension()
 		FCreateSceneOutlinerColumn::CreateRaw(this, &FSWManagerModule::OnCreateSelectionLockColumn)
 	);
 
-	SceneOutlinerModule.RegisterDefaultColumnType<FOutlinerSelectionLockColumn>(SelectionLockColumnInfo); // SceneOutlinerModule에 SelectionLockColumnInfo를 ColumnType으로 등록
+	SceneOutlinerModule.RegisterDefaultColumnType<FOutlinerSelectionColumn>(SelectionLockColumnInfo); // SceneOutlinerModule에 SelectionLockColumnInfo를 ColumnType으로 등록
 }
 
 TSharedRef<ISceneOutlinerColumn> FSWManagerModule::OnCreateSelectionLockColumn(ISceneOutliner& SceneOutliner)
 {
-	return MakeShareable(new FOutlinerSelectionLockColumn(SceneOutliner));
+	return MakeShareable(new FOutlinerSelectionColumn(SceneOutliner));
 }
 
 #pragma endregion

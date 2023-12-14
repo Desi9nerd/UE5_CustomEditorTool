@@ -1,7 +1,7 @@
-#include "CustomOutlinerColumn/OutlinerSelectionColumn.h"
+ï»¿#include "CustomOutlinerColumn/OutlinerSelectionColumn.h"
 #include "CustomStyle/SWManagerStyle.h"
 
-SHeaderRow::FColumn::FArguments FOutlinerSelectionLockColumn::ConstructHeaderRowColumn()
+SHeaderRow::FColumn::FArguments FOutlinerSelectionColumn::ConstructHeaderRowColumn()
 {
 	SHeaderRow::FColumn::FArguments ConstructedHeaderRow =
 		SHeaderRow::Column(GetColumnID())
@@ -10,17 +10,17 @@ SHeaderRow::FColumn::FArguments FOutlinerSelectionLockColumn::ConstructHeaderRow
 		.VAlignHeader(VAlign_Center)
 		.HAlignCell(HAlign_Center)
 		.VAlignCell(VAlign_Center)
-		.DefaultTooltip(FText::FromString(TEXT("Actor Selection Lock - Press icon to lock actor selection"))) // ¸¶¿ì½º¸¦ ¿Ã·ÈÀ»¶§ ³ª¿À´Â ¹®±¸
+		.DefaultTooltip(FText::FromString(TEXT("ì„ íƒí•œ Actor LOCK - ì•„ì´ì½˜ì„ ëˆŒëŸ¬ ì„ íƒí•œ ì•¡í„° ì ê¸ˆ"))) // ë§ˆìš°ìŠ¤ë¥¼ ì˜¬ë ¸ì„ë•Œ ë‚˜ì˜¤ëŠ” ë¬¸êµ¬
 		[
 			SNew(SImage)
 			.ColorAndOpacity(FSlateColor::UseForeground())
-			.Image(FSWManagerStyle::GetCreatedSlateStyleSet()->GetBrush(FName("LevelEditor.LockSelection"))) // SWManagerStyle.h¿¡¼­ ¸¸µç SlateStyleSet »ç¿ë. "LevelEditor.LockSelection"ÀÌ¸§ÀÇ Style »ç¿ë.
+			.Image(FSWManagerStyle::GetCreatedSlateStyleSet()->GetBrush(FName("LevelEditor.LockSelection"))) // SWManagerStyle.hì—ì„œ ë§Œë“  SlateStyleSet ì‚¬ìš©. "LevelEditor.LockSelection"ì´ë¦„ì˜ Style ì‚¬ìš©.
 		];
 
 	return ConstructedHeaderRow;
 }
 
-const TSharedRef<SWidget> FOutlinerSelectionLockColumn::ConstructRowWidget(FSceneOutlinerTreeItemRef TreeItem, const STableRow<FSceneOutlinerTreeItemPtr>& Row)
+const TSharedRef<SWidget> FOutlinerSelectionColumn::ConstructRowWidget(FSceneOutlinerTreeItemRef TreeItem, const STableRow<FSceneOutlinerTreeItemPtr>& Row)
 {
-	return SNullWidget::NullWidget; // TSharedRef<SWidget>ÀÇ nullptr¹öÁ¯
+	return SNullWidget::NullWidget; // TSharedRef<SWidget>ì˜ nullptrë²„ì ¼
 }
