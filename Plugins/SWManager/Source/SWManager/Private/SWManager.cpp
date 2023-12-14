@@ -101,6 +101,12 @@ void FSWManagerModule::AddCBMenuEntry(FMenuBuilder& MenuBuilder) // ContentBrows
 
 void FSWManagerModule::OnDeleteUnsuedAssetButtonClicked()  // 에셋 삭제
 {
+	if (ConstructedDockTab.IsValid())
+	{
+		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("이 작업을 수행하기 전에 제거 마법사 탭을 먼저 종료 해주세요."));
+		return;
+	}
+
 	if (FolderPathsSelected.Num() > 1) // 2개 이상의 폴더가 선택된 경우
 	{
 		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("한 개의 폴더에서만 진행할 수 있습니다"));
@@ -158,6 +164,12 @@ void FSWManagerModule::OnDeleteUnsuedAssetButtonClicked()  // 에셋 삭제
 
 void FSWManagerModule::OnDeleteEmptyFoldersButtonClicked() // 사용하지 않는 Folder 제거
 {
+	if (ConstructedDockTab.IsValid())
+	{
+		DebugHeader::ShowMsgDialog(EAppMsgType::Ok, TEXT("이 작업을 수행하기 전에 제거 마법사 탭을 먼저 종료 해주세요."));
+		return;
+	}
+
 	FixUpRedirectors(); // 경로가 문제되지 않도록 체크 후 업데이트
 	
 	TArray<FString> FolderPathsArray = UEditorAssetLibrary::ListAssets(FolderPathsSelected[0], true, true); // 선택된 폴더(FolderPathsSelected[0]) 내에 있는 모든 에셋+폴더들을 FolderPathsArray변수에 담는다
