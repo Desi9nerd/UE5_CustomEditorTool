@@ -32,7 +32,7 @@ const TSharedRef<SWidget> FOutlinerSelectionColumn::ConstructRowWidget(FSceneOut
 
 	FSWManagerModule& SWManagerModule = FModuleManager::LoadModuleChecked<FSWManagerModule>(TEXT("SWManager"));
 
-	const bool bIsActorSelectionLocked = SWManagerModule.CheckIsActorSelectionLocked(ActorTreeItem->Actor.Get());
+	const bool bIsActorSelectionLocked = SWManagerModule.CheckIsActorSelectionLocked(ActorTreeItem->Actor.Get()); // ActorTreeItem->Actor.Get()을 CheckIsActorSelectionLocked함수에 Actor로 넘겨 해당 Actor가 Lock 상태인지 아닌지 true/false로 리턴받는다. 이 true/false 결과를 bIsActorSelectionLocked 변수와 연동한다. 따라서 bIsActorSelectionLocked가 true면 Lock된 상태, false면 Lock이 아닌 상태다.
 
 	TSharedRef<SCheckBox> ConstructedRowWidgetCheckBox =
 		SNew(SCheckBox)
